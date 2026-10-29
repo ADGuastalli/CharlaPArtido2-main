@@ -1,0 +1,3358 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Sportiva — Charla Técnica</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Inter:wght@300;400;600;700;900&display=swap");
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body,
+      #root {
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+        background: #0b1f5c;
+        color: #0b1b4d;
+        font-family: "Inter", sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      .font-display {
+        font-family: "Big Shoulders Display", "Inter", sans-serif;
+        font-weight: 900;
+        letter-spacing: 0.01em;
+        line-height: 0.95;
+      }
+      .scroll-y {
+        overflow-y: auto;
+        scrollbar-width: none;
+      }
+      .scroll-y::-webkit-scrollbar {
+        display: none;
+      }
+
+      /* ───────── FONDOS ───────── */
+      .bg-light {
+        background:
+          radial-gradient(
+              circle,
+              rgba(37, 99, 235, 0.13) 1.2px,
+              transparent 1.6px
+            )
+            0 0 / 26px 26px,
+          linear-gradient(135deg, #ffffff 0%, #eef4ff 100%);
+      }
+      .bg-dark {
+        background:
+          repeating-linear-gradient(
+            115deg,
+            rgba(255, 255, 255, 0.035) 0 2px,
+            transparent 2px 46px
+          ),
+          linear-gradient(145deg, #1e40af 0%, #172a7a 45%, #0b1f5c 100%);
+      }
+      .blob {
+        position: absolute;
+        border-radius: 9999px;
+        filter: blur(60px);
+        pointer-events: none;
+        animation: blobMove 14s ease-in-out infinite;
+      }
+      .stripe {
+        position: absolute;
+        pointer-events: none;
+        transform: skewX(-14deg);
+        animation: stripeDrift 9s ease-in-out infinite alternate;
+      }
+
+      /* ───────── ANIMACIONES ───────── */
+      .a {
+        animation-duration: var(--t, 0.75s);
+        animation-delay: var(--d, 0s);
+        animation-fill-mode: backwards;
+        animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+      }
+      .a-rise {
+        animation-name: rise;
+      }
+      .a-left {
+        animation-name: slideL;
+      }
+      .a-right {
+        animation-name: slideR;
+      }
+      .a-pop {
+        animation-name: pop;
+        animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      .a-flip {
+        animation-name: flipIn;
+      }
+      .a-wipe {
+        animation-name: wipe;
+        animation-duration: var(--t, 0.9s);
+      }
+      .a-draw {
+        animation-name: drawX;
+        transform-origin: left center;
+        animation-duration: var(--t, 1s);
+      }
+      .a-char {
+        animation-name: charIn;
+        animation-duration: 0.6s;
+        animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      .a-marker {
+        animation-name: marker;
+        animation-duration: 0.9s;
+      }
+      .a-fade {
+        animation-name: fadeIn;
+      }
+
+      @keyframes rise {
+        from {
+          opacity: 0;
+          transform: translateY(54px) scale(0.97);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      @keyframes slideL {
+        from {
+          opacity: 0;
+          transform: translateX(-110px) skewX(10deg);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      @keyframes slideR {
+        from {
+          opacity: 0;
+          transform: translateX(110px) skewX(-10deg);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      @keyframes pop {
+        from {
+          opacity: 0;
+          transform: scale(0.3) rotate(-10deg);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      @keyframes flipIn {
+        from {
+          opacity: 0;
+          transform: perspective(800px) rotateY(-85deg) translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      @keyframes wipe {
+        from {
+          clip-path: inset(0 100% 0 0);
+        }
+        to {
+          clip-path: inset(0 0 0 0);
+        }
+      }
+      @keyframes drawX {
+        from {
+          transform: scaleX(0);
+        }
+        to {
+          transform: scaleX(1);
+        }
+      }
+      @keyframes charIn {
+        from {
+          opacity: 0;
+          transform: translateY(80%) rotate(12deg) scale(0.6);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      @keyframes marker {
+        from {
+          background-size: 0% 100%;
+        }
+        to {
+          background-size: 100% 100%;
+        }
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      @keyframes floatY {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-16px);
+        }
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      @keyframes marquee {
+        to {
+          transform: translateX(-50%);
+        }
+      }
+      @keyframes pulseRing {
+        0% {
+          transform: scale(1);
+          opacity: 0.55;
+        }
+        100% {
+          transform: scale(2.2);
+          opacity: 0;
+        }
+      }
+      @keyframes beat {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        15% {
+          transform: scale(1.22);
+        }
+        30% {
+          transform: scale(1);
+        }
+        45% {
+          transform: scale(1.14);
+        }
+        60% {
+          transform: scale(1);
+        }
+      }
+      @keyframes riseUp {
+        0% {
+          transform: translateY(0) scale(0.6);
+          opacity: 0;
+        }
+        15% {
+          opacity: 0.9;
+        }
+        100% {
+          transform: translateY(-340px) scale(1.1);
+          opacity: 0;
+        }
+      }
+      @keyframes blobMove {
+        0%,
+        100% {
+          transform: translate(0, 0) scale(1);
+        }
+        50% {
+          transform: translate(50px, -40px) scale(1.18);
+        }
+      }
+      @keyframes stripeDrift {
+        from {
+          transform: skewX(-14deg) translateX(-30px);
+        }
+        to {
+          transform: skewX(-14deg) translateX(40px);
+        }
+      }
+      @keyframes numIn {
+        from {
+          opacity: 0;
+          transform: perspective(300px) rotateX(-80deg);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      @keyframes wobble {
+        0%,
+        100% {
+          transform: rotate(-8deg);
+        }
+        50% {
+          transform: rotate(8deg) translateY(-4px);
+        }
+      }
+      @keyframes sweep {
+        0% {
+          transform: translateX(-135%) skewX(-14deg);
+        }
+        43% {
+          transform: translateX(0) skewX(-14deg);
+        }
+        57% {
+          transform: translateX(0) skewX(-14deg);
+        }
+        100% {
+          transform: translateX(135%) skewX(-14deg);
+        }
+      }
+      @keyframes shine {
+        from {
+          transform: translateX(-120%) skewX(-20deg);
+        }
+        to {
+          transform: translateX(260%) skewX(-20deg);
+        }
+      }
+      @keyframes bounceX {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        50% {
+          transform: translateX(8px);
+        }
+      }
+
+      .float {
+        animation: floatY 5s ease-in-out infinite;
+      }
+      .float-slow {
+        animation: floatY 8s ease-in-out infinite;
+      }
+      .spin-slow {
+        animation: spin 22s linear infinite;
+      }
+      .spin-orbit {
+        animation: spin 7s linear infinite;
+      }
+      .marquee {
+        display: flex;
+        width: max-content;
+        animation: marquee 28s linear infinite;
+      }
+      .marquee-slow {
+        animation-duration: 60s;
+      }
+      .beat {
+        animation: beat 1.8s ease-in-out infinite;
+      }
+      .rise-up {
+        animation: riseUp 5s ease-in infinite;
+      }
+      .pulse-ring {
+        animation: pulseRing 2.2s ease-out infinite;
+      }
+      .wobble {
+        animation: wobble 2.4s ease-in-out infinite;
+      }
+      .nudge {
+        animation: bounceX 1.4s ease-in-out infinite;
+      }
+
+      /* Cortina de transición entre slides */
+      .curtain {
+        position: fixed;
+        top: 0;
+        left: -15%;
+        width: 130%;
+        height: 100%;
+        z-index: 70;
+        pointer-events: none;
+        background: linear-gradient(120deg, #1d4ed8, #1e3a8a);
+        animation: sweep 0.95s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+      }
+      .curtain::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        width: 14px;
+        background: #ec4899;
+      }
+      .curtain::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 34px;
+        background: #ffffff;
+      }
+
+      /* Hover */
+      .lift {
+        transition:
+          transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+          box-shadow 0.3s;
+      }
+      .lift:hover {
+        transform: translateY(-8px) rotate(-0.6deg);
+      }
+      .shiny {
+        position: relative;
+        overflow: hidden;
+      }
+      .shiny::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 40%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.35),
+          transparent
+        );
+        transform: translateX(-120%) skewX(-20deg);
+        pointer-events: none;
+      }
+      .shiny:hover::after {
+        animation: shine 0.9s ease;
+      }
+
+      .marker-pink {
+        background-image: linear-gradient(
+          to top,
+          #ec4899 0 0.26em,
+          transparent 0.26em
+        );
+        background-repeat: no-repeat;
+        background-size: 100% 100%;
+      }
+
+      /* Dato pendiente de cargar */
+      .todo {
+        color: #f59e0b !important;
+        border-bottom: 1px dashed rgba(245, 158, 11, 0.7);
+      }
+      [data-theme="light"] .todo {
+        color: #b45309 !important;
+        border-bottom-color: rgba(180, 83, 9, 0.6);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .a,
+        .beat,
+        .rise-up,
+        .float,
+        .float-slow,
+        .spin-slow,
+        .spin-orbit,
+        .marquee,
+        .pulse-ring,
+        .wobble,
+        .nudge,
+        .blob,
+        .stripe {
+          animation: none !important;
+        }
+        .curtain {
+          animation-duration: 0.01s;
+        }
+      }
+      /* Ilustraciones animadas del termómetro */
+      .ilu-svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+        overflow: visible;
+      }
+      .ilu-svg [class*="t-"] {
+        transform-box: fill-box;
+        transform-origin: center;
+      }
+      .ilu-svg .t-beat {
+        animation: tBeat 1.5s ease-in-out infinite;
+      }
+      .ilu-svg .t-swing {
+        transform-box: view-box;
+        transform-origin: 80px 12px;
+        animation: tSwing 2.4s ease-in-out infinite;
+      }
+      .ilu-svg .t-roll {
+        animation: tRoll 2.4s ease-in-out infinite;
+      }
+      .ilu-svg .t-dash {
+        stroke-dasharray: 6 6;
+        animation: tDash 1.1s linear infinite;
+      }
+      .ilu-svg .t-draw {
+        stroke-dasharray: 170;
+        animation: tDraw 2.2s ease-in-out infinite;
+      }
+      .ilu-svg .t-charge {
+        animation: tCharge 1.8s ease-in-out infinite;
+      }
+      .ilu-svg .c2 {
+        animation-delay: 0.25s;
+      }
+      .ilu-svg .c3 {
+        animation-delay: 0.5s;
+      }
+      .ilu-svg .t-float {
+        animation: tFloat 2.6s ease-in-out infinite;
+      }
+      .ilu-svg .f2 {
+        animation-delay: -1.3s;
+      }
+      .ilu-svg .t-flicker {
+        transform-origin: 50% 100%;
+        animation: tFlicker 0.9s ease-in-out infinite;
+      }
+      .ilu-svg .t-flutter {
+        animation: tFlutter 0.45s ease-in-out infinite;
+      }
+      .ilu-svg .t-blink {
+        animation: tBlink 1.2s ease-in-out infinite;
+      }
+      .ilu-svg .t-spin {
+        animation: tSpin 6s linear infinite;
+      }
+      @keyframes tBeat {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        15% {
+          transform: scale(1.12);
+        }
+        30% {
+          transform: scale(1);
+        }
+        45% {
+          transform: scale(1.07);
+        }
+      }
+      @keyframes tSwing {
+        0%,
+        100% {
+          transform: rotate(0deg);
+        }
+        50% {
+          transform: rotate(-14deg);
+        }
+      }
+      @keyframes tRoll {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        50% {
+          transform: translateX(9px);
+        }
+      }
+      @keyframes tDash {
+        to {
+          stroke-dashoffset: -24;
+        }
+      }
+      @keyframes tDraw {
+        0% {
+          stroke-dashoffset: 170;
+        }
+        65%,
+        100% {
+          stroke-dashoffset: 0;
+        }
+      }
+      @keyframes tCharge {
+        0%,
+        100% {
+          opacity: 0.35;
+        }
+        50% {
+          opacity: 1;
+        }
+      }
+      @keyframes tFloat {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-5px);
+        }
+      }
+      @keyframes tFlicker {
+        0%,
+        100% {
+          transform: scale(1, 1);
+        }
+        50% {
+          transform: scale(0.94, 1.07) skewX(2deg);
+        }
+      }
+      @keyframes tFlutter {
+        0%,
+        100% {
+          transform: scaleX(1);
+        }
+        50% {
+          transform: scaleX(0.6);
+        }
+      }
+      @keyframes tBlink {
+        0%,
+        100% {
+          opacity: 0.35;
+        }
+        50% {
+          opacity: 1;
+        }
+      }
+      @keyframes tSpin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .mercurio {
+        transform-box: fill-box;
+        transform-origin: 50% 100%;
+        transition: transform 0.7s cubic-bezier(0.22, 1.2, 0.36, 1);
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .ilu-svg * {
+          animation: none !important;
+        }
+      }
+
+      textarea {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(37, 99, 235, 0.35) transparent;
+      }
+      textarea::-webkit-scrollbar {
+        width: 5px;
+      }
+      textarea::-webkit-scrollbar-thumb {
+        background: rgba(37, 99, 235, 0.35);
+        border-radius: 4px;
+      }
+      [data-theme="dark"] textarea {
+        scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+      }
+      .alto {
+        height: 100vh;
+        height: 100dvh;
+      }
+      @keyframes giroSale {
+        from {
+          transform: rotateY(0deg);
+        }
+        to {
+          transform: rotateY(90deg);
+        }
+      }
+      @keyframes giroEntra {
+        from {
+          transform: rotateY(-90deg);
+        }
+        to {
+          transform: rotateY(0deg);
+        }
+      }
+      .giro-sale {
+        animation: giroSale 0.38s cubic-bezier(0.55, 0, 0.8, 0.4) forwards;
+      }
+      .giro-entra {
+        animation: giroEntra 0.45s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+      }
+      select option {
+        color: #0b1f5c;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      const { useState, useEffect, useRef, useCallback, useMemo } = React;
+
+      /* ══════════════════════════════════════════════════════════
+         CONFIGURACIÓN — editá acá el plantel y los partidos
+         ══════════════════════════════════════════════════════════ */
+      const CONFIG = {
+        equipo: "SOCIEDAD SPORTIVA",
+        categoria: "QUINTA",
+        torneo: 'CRC "A" BONAERENSE 2026',
+        // Jugadoras (las mismas de la charla pre torneo). Las primeras 11 arrancan en cancha.
+        plantel: [
+          "JULI",
+          "AMPI",
+          "CHARO",
+          "DOLO",
+          "DELFI",
+          "JOAQUI",
+          "JUANA",
+          "LULI",
+          "TIZI",
+          "OLI",
+          "FELI",
+          "JOSE",
+          "MORA",
+          "PAZ",
+          "VICKY",
+          "MARIA",
+          "MANU",
+          "EMMA",
+          "CATA",
+          "MALE",
+          "LUA",
+        ],
+        // Partidos del fixture. Cada uno guarda su propia charla (notas, imágenes, XI y videos).
+        partidos: [
+          {
+            id: "los-cardos",
+            rival: "LOS CARDOS R.C.",
+            dia: "Jueves 29",
+            hora: "12:20",
+            cancha: "Cancha 2 · Sportiva",
+            pdo: "PDO N° 1 · Zona B",
+          },
+          {
+            id: "cuds",
+            rival: "C.U.D.S. A",
+            dia: "Viernes 30",
+            hora: "09:00",
+            cancha: "Cancha 2 · Sportiva",
+            pdo: "PDO N° 5 · Zona B",
+          },
+          {
+            id: "social-junin",
+            rival: "CLUB SOCIAL DE JUNÍN",
+            dia: "Viernes 30",
+            hora: "15:40",
+            cancha: "Cancha 2 · Sportiva",
+            pdo: "PDO N° 8 · Zona B",
+          },
+        ],
+        // Videos por defecto (archivos en la misma carpeta). Cada partido puede tener su propio link.
+        videos: {
+          ataque: "ConPelota.mp4",
+          defensa: "SinPelota.mp4",
+          ccof: "CCOfensivo.mp4",
+          ccdef: "CCDefensivo.mp4",
+        },
+      };
+
+      /* ── GUARDADO (en este navegador) ─────────────────────────── */
+      const LS = "sportiva_partido_v3";
+      const lsGet = (k, def) => {
+        try {
+          const v = localStorage.getItem(`${LS}:${k}`);
+          return v === null ? def : JSON.parse(v);
+        } catch (e) {
+          return def;
+        }
+      };
+      const lsSet = (k, v) => {
+        try {
+          localStorage.setItem(`${LS}:${k}`, JSON.stringify(v));
+          return true;
+        } catch (e) {
+          return false;
+        }
+      };
+      const lsKeys = (prefix) => {
+        const out = [];
+        try {
+          for (let i = 0; i < localStorage.length; i++) {
+            const k = localStorage.key(i);
+            if (k && k.startsWith(`${LS}:${prefix}`))
+              out.push(k.slice(LS.length + 1));
+          }
+        } catch (e) {}
+        return out;
+      };
+
+      // Las imágenes van a IndexedDB (entra mucho más que en localStorage)
+      const IMG = (() => {
+        let dbp = null;
+        const abrir = () =>
+          dbp ||
+          (dbp = new Promise((res, rej) => {
+            const r = indexedDB.open("sportiva_partido", 1);
+            r.onupgradeneeded = () => r.result.createObjectStore("img");
+            r.onsuccess = () => res(r.result);
+            r.onerror = () => rej(r.error);
+          }));
+        const tx = async (modo, fn) => {
+          const db = await abrir();
+          return new Promise((res, rej) => {
+            const t = db.transaction("img", modo);
+            const req = fn(t.objectStore("img"));
+            t.oncomplete = () => res(req ? req.result : undefined);
+            t.onerror = () => rej(t.error);
+          });
+        };
+        return {
+          get: (k) =>
+            tx("readonly", (s) => s.get(k)).catch(() =>
+              lsGet("img:" + k, null),
+            ),
+          set: (k, v) =>
+            tx("readwrite", (s) => s.put(v, k)).catch(() =>
+              lsSet("img:" + k, v),
+            ),
+          del: (k) =>
+            tx("readwrite", (s) => s.delete(k)).catch(() =>
+              lsSet("img:" + k, null),
+            ),
+          keys: () => tx("readonly", (s) => s.getAllKeys()).catch(() => []),
+        };
+      })();
+
+      const useEsMovil = () => {
+        const q = "(max-width: 1023px)";
+        const [m, setM] = useState(() => window.matchMedia(q).matches);
+        useEffect(() => {
+          const mq = window.matchMedia(q);
+          const f = () => setM(mq.matches);
+          mq.addEventListener
+            ? mq.addEventListener("change", f)
+            : mq.addListener(f);
+          return () =>
+            mq.removeEventListener
+              ? mq.removeEventListener("change", f)
+              : mq.removeListener(f);
+        }, []);
+        return m;
+      };
+
+      const usePersist = (key, def) => {
+        const [v, setV] = useState(() => lsGet(key, def));
+        const set = (nv) =>
+          setV((prev) => {
+            const val = typeof nv === "function" ? nv(prev) : nv;
+            lsSet(key, val);
+            return val;
+          });
+        return [v, set];
+      };
+
+      const slugId = (s) =>
+        String(s)
+          .normalize("NFD")
+          .replace(/[̀-ͯ]/g, "")
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-|-$/g, "");
+
+      /* Delay escalonado para animaciones de entrada */
+      const d = (i = 0, base = 0.15, step = 0.1) => ({
+        "--d": `${base + i * step}s`,
+      });
+
+      /* ── ICONOS ─────────────────────────────────────────────── */
+      const icons = {
+        left: <polyline points="15 18 9 12 15 6" />,
+        right: <polyline points="9 18 15 12 9 6" />,
+        users: (
+          <>
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+          </>
+        ),
+        shield: <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />,
+        zap: <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />,
+        target: (
+          <>
+            <circle cx="12" cy="12" r="10" />
+            <circle cx="12" cy="12" r="6" />
+            <circle cx="12" cy="12" r="2" />
+          </>
+        ),
+        trophy: (
+          <>
+            <polyline points="8 21 12 17 16 21" />
+            <line x1="12" y1="17" x2="12" y2="11" />
+            <path d="M7 4H4a2 2 0 0 0-2 2v2a4 4 0 0 0 4 4" />
+            <path d="M17 4h3a2 2 0 0 1 2 2v2a4 4 0 0 1-4 4" />
+            <rect x="7" y="2" width="10" height="9" rx="1" />
+          </>
+        ),
+        check: <polyline points="20 6 9 17 4 12" />,
+        pin: (
+          <>
+            <path d="M12 22s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12z" />
+            <circle cx="12" cy="10" r="2.5" />
+          </>
+        ),
+        heart: (
+          <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z" />
+        ),
+        home: (
+          <>
+            <path d="M3 11l9-8 9 8" />
+            <path d="M5 10v10h14V10" />
+            <path d="M10 20v-6h4v6" />
+          </>
+        ),
+        flag: (
+          <>
+            <path d="M4 22V4" />
+            <path d="M4 4h13l-2 4 2 4H4" />
+          </>
+        ),
+      };
+      const Icon = ({ id, size = 20, className = "" }) => (
+        <svg
+          width={size}
+          height={size}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className={className}
+        >
+          {icons[id]}
+        </svg>
+      );
+
+      const Ico = ({ d: path, size = 18, className = "" }) => (
+        <svg
+          width={size}
+          height={size}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className={className}
+        >
+          {path}
+        </svg>
+      );
+      const I = {
+        upload: (
+          <>
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="17 8 12 3 7 8" />
+            <line x1="12" y1="3" x2="12" y2="15" />
+          </>
+        ),
+        download: (
+          <>
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </>
+        ),
+        play: <polygon points="6 4 20 12 6 20 6 4" />,
+        expand: (
+          <>
+            <polyline points="15 3 21 3 21 9" />
+            <polyline points="9 21 3 21 3 15" />
+            <line x1="21" y1="3" x2="14" y2="10" />
+            <line x1="3" y1="21" x2="10" y2="14" />
+          </>
+        ),
+        x: (
+          <>
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </>
+        ),
+        plus: (
+          <>
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </>
+        ),
+        link: (
+          <>
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+          </>
+        ),
+        refresh: (
+          <>
+            <polyline points="23 4 23 10 17 10" />
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+          </>
+        ),
+      };
+
+      /* ── PIEZAS REUTILIZABLES (mismo estilo que la charla pre torneo) ── */
+      const Logo = ({ size = 128, ring = true }) => (
+        <div
+          className="rounded-full bg-white flex items-center justify-center relative overflow-hidden"
+          style={{
+            width: size,
+            height: size,
+            minWidth: size,
+            border: ring ? "5px solid #2563eb" : "none",
+            boxShadow:
+              "0 0 0 4px rgba(255,255,255,0.25), 0 20px 50px rgba(8,20,80,0.45)",
+          }}
+        >
+          <img
+            src="logo.png"
+            alt="Logo Sportiva"
+            style={{ width: "85%", height: "85%", objectFit: "contain" }}
+            onError={(e) => {
+              e.target.style.display = "none";
+              e.target.nextSibling.style.display = "flex";
+            }}
+          />
+          <div
+            style={{
+              display: "none",
+              position: "absolute",
+              inset: 0,
+              background: "linear-gradient(135deg,#1d4ed8,#172a7a)",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <span
+              className="font-display text-white"
+              style={{ fontSize: size * 0.4 }}
+            >
+              SS
+            </span>
+          </div>
+        </div>
+      );
+
+      const SplitText = ({
+        text,
+        className = "",
+        base = 0.1,
+        step = 0.04,
+        accent = [],
+        accentClass = "text-pink-400",
+      }) => {
+        let n = 0;
+        const words = text.split(" ");
+        return (
+          <span className={className} aria-label={text}>
+            {words.map((w, wi) => (
+              <React.Fragment key={wi}>
+                {wi > 0 && " "}
+                <span
+                  className="inline-block whitespace-nowrap"
+                  aria-hidden="true"
+                >
+                  {w.split("").map((ch, ci) => (
+                    <span
+                      key={ci}
+                      className={`a a-char inline-block ${accent.includes(ch) ? accentClass : ""}`}
+                      style={{ "--d": `${base + n++ * step}s` }}
+                    >
+                      {ch}
+                    </span>
+                  ))}
+                </span>
+              </React.Fragment>
+            ))}
+          </span>
+        );
+      };
+
+      const Eyebrow = ({ children, dark = false, delay = 0 }) => (
+        <p
+          className={`a a-left flex items-center gap-2 font-mono font-bold uppercase tracking-[0.25em] text-[10px] md:text-xs mb-2 ${dark ? "text-blue-200" : "text-blue-700"}`}
+          style={d(0, delay, 0)}
+        >
+          <span className="relative inline-flex w-2.5 h-2.5">
+            <span className="absolute inset-0 rounded-full bg-pink-500 pulse-ring"></span>
+            <span className="relative w-2.5 h-2.5 rounded-full bg-pink-500"></span>
+          </span>
+          {children}
+        </p>
+      );
+
+      /* Fondo + contenedor de cada slide */
+
+      const Stage = ({ theme = "light", children }) => (
+        <div
+          data-theme={theme}
+          className={`h-full w-full relative overflow-hidden ${theme === "dark" ? "bg-dark text-white" : "bg-light text-blue-950"}`}
+        >
+          {theme === "light" ? (
+            <>
+              <div
+                className="blob bg-blue-400/25"
+                style={{ width: 380, height: 380, top: -90, right: -60 }}
+              ></div>
+              <div
+                className="blob bg-blue-300/25"
+                style={{
+                  width: 300,
+                  height: 300,
+                  bottom: -80,
+                  left: -50,
+                  animationDelay: "-5s",
+                }}
+              ></div>
+              <div
+                className="stripe bg-blue-600/[0.07]"
+                style={{ top: 0, right: "6%", width: "9%", height: "100%" }}
+              ></div>
+              <div
+                className="stripe bg-blue-600/[0.05]"
+                style={{
+                  top: 0,
+                  right: "20%",
+                  width: "3%",
+                  height: "100%",
+                  animationDelay: "-3s",
+                }}
+              ></div>
+            </>
+          ) : (
+            <>
+              <div
+                className="blob bg-blue-400/30"
+                style={{ width: 420, height: 420, top: -120, left: -80 }}
+              ></div>
+              <div
+                className="blob bg-sky-300/20"
+                style={{
+                  width: 320,
+                  height: 320,
+                  bottom: -100,
+                  right: -40,
+                  animationDelay: "-6s",
+                }}
+              ></div>
+              <div
+                className="stripe bg-white/[0.05]"
+                style={{ top: 0, right: "8%", width: "10%", height: "100%" }}
+              ></div>
+              <div
+                className="stripe bg-pink-500/[0.12]"
+                style={{
+                  top: 0,
+                  right: "21%",
+                  width: "1.2%",
+                  height: "100%",
+                  animationDelay: "-2s",
+                }}
+              ></div>
+            </>
+          )}
+          <div className="relative z-10 h-full">{children}</div>
+        </div>
+      );
+
+      /* Contenedor de alto completo para las diapositivas de trabajo */
+      const Marco = ({ children, className = "" }) => (
+        <div
+          className={`h-full overflow-y-auto scroll-y lg:overflow-hidden px-4 md:px-10 pt-12 md:pt-14 pb-28 lg:pb-24 ${className}`}
+        >
+          <div className="max-w-7xl mx-auto min-h-full lg:h-full flex flex-col">
+            {children}
+          </div>
+        </div>
+      );
+
+      const tema = (dark) =>
+        dark
+          ? {
+              card: "bg-white/10 border border-white/20 backdrop-blur",
+              titulo: "text-white",
+              acento: "text-blue-200",
+              sub: "text-blue-100",
+              campo: "text-white placeholder:text-white/40",
+              chip: "bg-white/10 border border-white/25 text-white",
+            }
+          : {
+              card: "bg-white border border-blue-100 shadow-xl shadow-blue-900/10",
+              titulo: "text-blue-900",
+              acento: "text-blue-600",
+              sub: "text-slate-600",
+              campo: "text-blue-950 placeholder:text-slate-400",
+              chip: "bg-blue-50 border border-blue-200 text-blue-900",
+            };
+
+      const Encabezado = ({ eyebrow, titulo, acento, dark, partido }) => (
+        <header className="flex flex-wrap items-end justify-between gap-3 mb-4 md:mb-5 shrink-0">
+          <div>
+            <Eyebrow dark={dark}>{eyebrow}</Eyebrow>
+            <h2
+              className={`font-display uppercase text-4xl md:text-6xl ${dark ? "text-white" : "text-blue-900"}`}
+            >
+              <SplitText text={titulo} base={0.1} step={0.04} />
+              {acento && (
+                <>
+                  {" "}
+                  <span className={dark ? "text-blue-200" : "text-blue-600"}>
+                    <SplitText text={acento} base={0.4} step={0.04} />
+                  </span>
+                </>
+              )}
+            </h2>
+          </div>
+          {partido && (
+            <span
+              className={`a a-pop inline-flex items-center gap-2 rounded-full px-4 py-2 font-bold text-xs md:text-sm uppercase ${dark ? "bg-white text-blue-800" : "bg-blue-700 text-white"}`}
+              style={d(0, 0.5, 0)}
+            >
+              <span className="font-display text-pink-500 text-lg leading-none">
+                VS
+              </span>{" "}
+              {partido.rival}
+            </span>
+          )}
+        </header>
+      );
+
+      /* Texto que se guarda solo */
+      const Notas = ({
+        storeKey,
+        placeholder,
+        dark,
+        className = "",
+        grande = false,
+      }) => {
+        const [v, setV] = usePersist(storeKey, "");
+        const t = tema(dark);
+        return (
+          <textarea
+            value={v}
+            onChange={(e) => setV(e.target.value)}
+            placeholder={placeholder}
+            className={`w-full flex-1 bg-transparent outline-none resize-none leading-relaxed ${grande ? "text-base md:text-xl" : "text-sm md:text-base"} ${t.campo} ${className}`}
+          />
+        );
+      };
+
+      /* ══════════ VIDEOS: reproductor a pantalla completa con puntero láser ══════════ */
+
+      // Reconoce archivos de la carpeta, links de YouTube y de Google Drive
+      const tipoVideo = (url) => {
+        const u = String(url || "").trim();
+        if (!u) return null;
+        const yt = u.match(
+          /(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/|live\/)|youtu\.be\/)([\w-]{11})/,
+        );
+        if (yt) {
+          const t = u.match(/[?&](?:t|start)=(\d+)/);
+          return { tipo: "youtube", id: yt[1], start: t ? t[1] : "" };
+        }
+        const dr = u.match(
+          /drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:.*&)?id=)([\w-]+)/,
+        );
+        if (dr) return { tipo: "drive", id: dr[1] };
+        if (/^https?:\/\//i.test(u) && !/\.(mp4|webm|m4v|mov)(\?|#|$)/i.test(u))
+          return { tipo: "externo", url: u };
+        return { tipo: "archivo", url: u };
+      };
+
+      const mmss = (s) => {
+        if (!isFinite(s)) return "0:00";
+        const m = Math.floor(s / 60);
+        const ss = Math.floor(s % 60);
+        return `${m}:${String(ss).padStart(2, "0")}`;
+      };
+
+      const Reproductor = ({ fuente, titulo, cerrar }) => {
+        const caja = useRef(null);
+        const video = useRef(null);
+        const yt = useRef(null);
+        const lienzo = useRef(null);
+        const trazo = useRef([]);
+        const [laser, setLaser] = useState(fuente.tipo !== "drive");
+        const [punto, setPunto] = useState(null);
+        const [jugando, setJugando] = useState(true);
+        const [t, setT] = useState(0);
+        const [dur, setDur] = useState(0);
+        const [vel, setVel] = useState(1);
+        const [error, setError] = useState(false);
+        const [barra, setBarra] = useState(true);
+        const ocultar = useRef(null);
+        const esArchivo = fuente.tipo === "archivo";
+
+        // Al abrir: pantalla completa. Al salir de pantalla completa (Esc): se cierra.
+        useEffect(() => {
+          const el = caja.current;
+          const pedir = el.requestFullscreen || el.webkitRequestFullscreen;
+          if (pedir) {
+            try {
+              const r = pedir.call(el);
+              if (r && r.catch) r.catch(() => {});
+            } catch (e) {}
+          }
+          const onFs = () => {
+            if (
+              !document.fullscreenElement &&
+              !document.webkitFullscreenElement
+            )
+              cerrar();
+          };
+          document.addEventListener("fullscreenchange", onFs);
+          document.addEventListener("webkitfullscreenchange", onFs);
+          return () => {
+            document.removeEventListener("fullscreenchange", onFs);
+            document.removeEventListener("webkitfullscreenchange", onFs);
+          };
+        }, []);
+
+        const salir = () => {
+          if (document.fullscreenElement || document.webkitFullscreenElement) {
+            (document.exitFullscreen || document.webkitExitFullscreen).call(
+              document,
+            );
+          } else cerrar();
+        };
+
+        const ytCmd = (func, args = []) => {
+          if (yt.current && yt.current.contentWindow)
+            yt.current.contentWindow.postMessage(
+              JSON.stringify({ event: "command", func, args }),
+              "*",
+            );
+        };
+
+        const alternar = () => {
+          if (esArchivo && video.current) {
+            video.current.paused ? video.current.play() : video.current.pause();
+          } else if (fuente.tipo === "youtube") {
+            ytCmd(jugando ? "pauseVideo" : "playVideo");
+            setJugando((v) => !v);
+          }
+        };
+        const saltar = (s) => {
+          if (esArchivo && video.current)
+            video.current.currentTime = Math.max(
+              0,
+              Math.min(
+                video.current.duration || 0,
+                video.current.currentTime + s,
+              ),
+            );
+        };
+        const cuadro = (dir) => {
+          if (esArchivo && video.current) {
+            video.current.pause();
+            video.current.currentTime = Math.max(
+              0,
+              video.current.currentTime + dir / 25,
+            );
+          }
+        };
+        const velocidad = (v) => {
+          setVel(v);
+          if (video.current) video.current.playbackRate = v;
+        };
+
+        // Teclado del reproductor (tiene prioridad sobre el de las diapositivas)
+        useEffect(() => {
+          const h = (e) => {
+            const k = e.key;
+            const usadas = [
+              " ",
+              "k",
+              "K",
+              "ArrowLeft",
+              "ArrowRight",
+              ",",
+              ".",
+              "p",
+              "P",
+              "Escape",
+              "PageUp",
+              "PageDown",
+              "ArrowUp",
+              "ArrowDown",
+            ];
+            if (!usadas.includes(k)) return;
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            if (k === " " || k === "k" || k === "K") alternar();
+            else if (k === "ArrowLeft") saltar(-5);
+            else if (k === "ArrowRight") saltar(5);
+            else if (k === ",") cuadro(-1);
+            else if (k === ".") cuadro(1);
+            else if (k === "p" || k === "P") setLaser((v) => !v);
+            else if (k === "Escape") salir();
+            mostrarBarra();
+          };
+          window.addEventListener("keydown", h, true);
+          return () => window.removeEventListener("keydown", h, true);
+        });
+
+        // La barra de controles se esconde sola mientras el video corre
+        const mostrarBarra = () => {
+          setBarra(true);
+          clearTimeout(ocultar.current);
+          ocultar.current = setTimeout(() => setBarra(false), 2500);
+        };
+        useEffect(() => () => clearTimeout(ocultar.current), []);
+
+        // Estela del puntero láser
+        useEffect(() => {
+          let raf;
+          const dibujar = () => {
+            const c = lienzo.current;
+            if (c) {
+              const r = c.getBoundingClientRect();
+              if (
+                c.width !== Math.round(r.width) ||
+                c.height !== Math.round(r.height)
+              ) {
+                c.width = Math.round(r.width);
+                c.height = Math.round(r.height);
+              }
+              const ctx = c.getContext("2d");
+              ctx.clearRect(0, 0, c.width, c.height);
+              const ahora = performance.now();
+              trazo.current = trazo.current.filter((p) => ahora - p.t < 700);
+              const pts = trazo.current;
+              ctx.lineCap = "round";
+              ctx.lineJoin = "round";
+              for (let i = 1; i < pts.length; i++) {
+                const a = pts[i - 1];
+                const b = pts[i];
+                const vida = 1 - (ahora - b.t) / 700;
+                ctx.strokeStyle = `rgba(255,32,32,${0.75 * vida})`;
+                ctx.shadowColor = "rgba(255,0,0,0.9)";
+                ctx.shadowBlur = 14 * vida;
+                ctx.lineWidth = 2 + 7 * vida;
+                ctx.beginPath();
+                ctx.moveTo(a.x, a.y);
+                ctx.lineTo(b.x, b.y);
+                ctx.stroke();
+              }
+            }
+            raf = requestAnimationFrame(dibujar);
+          };
+          raf = requestAnimationFrame(dibujar);
+          return () => cancelAnimationFrame(raf);
+        }, []);
+
+        const mover = (e) => {
+          mostrarBarra();
+          if (!laser) return;
+          const r = e.currentTarget.getBoundingClientRect();
+          const p = { x: e.clientX - r.left, y: e.clientY - r.top };
+          setPunto(p);
+          trazo.current.push({ ...p, t: performance.now() });
+        };
+
+        const boton =
+          "h-11 min-w-[44px] px-3 rounded-full flex items-center justify-center gap-2 font-bold text-xs uppercase tracking-wider transition";
+        const iframe = fuente.tipo === "youtube" || fuente.tipo === "drive";
+
+        return (
+          <div
+            ref={caja}
+            data-noswipe
+            className="fixed inset-0 z-[90] bg-black flex flex-col select-none"
+            onMouseMove={mostrarBarra}
+          >
+            {/* Video */}
+            <div className="relative flex-1 min-h-0">
+              {esArchivo && (
+                <video
+                  ref={video}
+                  src={fuente.url}
+                  autoPlay
+                  playsInline
+                  className="absolute inset-0 w-full h-full object-contain bg-black"
+                  onPlay={() => setJugando(true)}
+                  onPause={() => (setJugando(false), setBarra(true))}
+                  onTimeUpdate={(e) => setT(e.currentTarget.currentTime)}
+                  onLoadedMetadata={(e) => (
+                    setDur(e.currentTarget.duration),
+                    (e.currentTarget.playbackRate = vel)
+                  )}
+                  onError={() => setError(true)}
+                />
+              )}
+              {fuente.tipo === "youtube" && (
+                <iframe
+                  ref={yt}
+                  title={titulo}
+                  className="absolute inset-0 w-full h-full"
+                  src={`https://www.youtube.com/embed/${fuente.id}?autoplay=1&enablejsapi=1&rel=0&modestbranding=1&playsinline=1${fuente.start ? `&start=${fuente.start}` : ""}`}
+                  allow="autoplay; encrypted-media; picture-in-picture"
+                  allowFullScreen
+                ></iframe>
+              )}
+              {fuente.tipo === "drive" && (
+                <iframe
+                  title={titulo}
+                  className="absolute inset-0 w-full h-full"
+                  src={`https://drive.google.com/file/d/${fuente.id}/preview`}
+                  allow="autoplay"
+                  allowFullScreen
+                ></iframe>
+              )}
+
+              {/* Capa para el láser y para pausar con un clic (en YouTube/Drive deja libre la barra de abajo del video) */}
+              {(laser || esArchivo || fuente.tipo === "youtube") && (
+                <div
+                  className="absolute inset-x-0 top-0"
+                  style={{
+                    bottom: iframe ? 64 : 0,
+                    cursor: laser ? "none" : "pointer",
+                  }}
+                  onMouseMove={mover}
+                  onMouseLeave={() => setPunto(null)}
+                  onClick={alternar}
+                >
+                  <canvas
+                    ref={lienzo}
+                    className="absolute inset-0 w-full h-full pointer-events-none"
+                  ></canvas>
+                  {laser && punto && (
+                    <span
+                      className="absolute pointer-events-none rounded-full"
+                      style={{
+                        left: punto.x,
+                        top: punto.y,
+                        width: 16,
+                        height: 16,
+                        transform: "translate(-50%,-50%)",
+                        background:
+                          "radial-gradient(circle, #fff 0 18%, #ff2a2a 34%, rgba(255,0,0,0.85) 55%, rgba(255,0,0,0) 72%)",
+                        boxShadow: "0 0 18px 6px rgba(255,0,0,0.65)",
+                      }}
+                    ></span>
+                  )}
+                  {esArchivo && !jugando && !error && (
+                    <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full bg-white/15 border border-white/30 backdrop-blur flex items-center justify-center text-white pointer-events-none">
+                      <span className="font-display text-xl tracking-widest">
+                        PAUSA
+                      </span>
+                    </span>
+                  )}
+                </div>
+              )}
+
+              {error && (
+                <div className="absolute inset-0 flex items-center justify-center p-6">
+                  <div className="max-w-lg rounded-3xl bg-white text-blue-950 p-6 text-center">
+                    <p className="font-display text-3xl uppercase text-blue-900">
+                      No se encontró el video
+                    </p>
+                    <p className="mt-2 text-sm">
+                      Buscaba <b>{fuente.url}</b>. Tiene que estar en la misma
+                      carpeta que <b>index.html</b>, con ese nombre exacto
+                      (mayúsculas incluidas). También podés pegar un link de
+                      YouTube o Drive con el botón del eslabón.
+                    </p>
+                    <button
+                      onClick={salir}
+                      className="mt-4 rounded-full bg-blue-700 text-white font-bold px-5 py-2"
+                    >
+                      Cerrar
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Arriba: título, láser y cerrar */}
+            <div
+              className={`absolute top-0 inset-x-0 p-3 md:p-4 flex items-center gap-3 bg-gradient-to-b from-black/70 to-transparent transition-opacity ${barra || !jugando ? "opacity-100" : "opacity-0"}`}
+            >
+              <span className="w-2 h-2 rounded-full bg-pink-500"></span>
+              <p className="font-display uppercase text-white text-xl md:text-2xl truncate flex-1">
+                {titulo}
+              </p>
+              <button
+                onClick={() => setLaser((v) => !v)}
+                className={`${boton} ${laser ? "bg-red-600 text-white" : "bg-white/15 text-white hover:bg-white/25"}`}
+                title="Puntero láser (tecla P)"
+              >
+                <span className="w-2.5 h-2.5 rounded-full bg-red-400 shadow-[0_0_8px_3px_rgba(255,0,0,0.7)]"></span>{" "}
+                Láser
+              </button>
+              <button
+                onClick={salir}
+                className={`${boton} bg-white text-blue-900 hover:bg-pink-500 hover:text-white`}
+                title="Cerrar (Esc)"
+              >
+                <Ico d={I.x} size={16} /> Cerrar
+              </button>
+            </div>
+
+            {/* Abajo: controles (solo para archivos de video) */}
+            {esArchivo && !error && (
+              <div
+                className={`absolute bottom-0 inset-x-0 p-3 md:p-4 bg-gradient-to-t from-black/80 to-transparent transition-opacity ${barra || !jugando ? "opacity-100" : "opacity-0"}`}
+              >
+                <input
+                  type="range"
+                  min="0"
+                  max={dur || 0}
+                  step="0.04"
+                  value={t}
+                  onChange={(e) =>
+                    video.current &&
+                    (video.current.currentTime = +e.target.value)
+                  }
+                  className="w-full accent-pink-500 cursor-pointer"
+                />
+                <div className="mt-2 flex flex-wrap items-center gap-2">
+                  <button
+                    onClick={alternar}
+                    className={`${boton} w-14 h-14 bg-pink-500 text-white text-sm`}
+                    title="Pausa / seguir (Espacio)"
+                  >
+                    {jugando ? "❚❚" : <Ico d={I.play} size={20} />}
+                  </button>
+                  <button
+                    onClick={() => saltar(-5)}
+                    className={`${boton} bg-white/15 text-white hover:bg-white/25`}
+                    title="Atrás 5 s (←)"
+                  >
+                    −5 s
+                  </button>
+                  <button
+                    onClick={() => saltar(5)}
+                    className={`${boton} bg-white/15 text-white hover:bg-white/25`}
+                    title="Adelante 5 s (→)"
+                  >
+                    +5 s
+                  </button>
+                  <button
+                    onClick={() => cuadro(-1)}
+                    className={`${boton} bg-white/15 text-white hover:bg-white/25 hidden sm:flex`}
+                    title="Cuadro anterior (,)"
+                  >
+                    ◂ cuadro
+                  </button>
+                  <button
+                    onClick={() => cuadro(1)}
+                    className={`${boton} bg-white/15 text-white hover:bg-white/25 hidden sm:flex`}
+                    title="Cuadro siguiente (.)"
+                  >
+                    cuadro ▸
+                  </button>
+                  <span className="text-white font-mono text-xs md:text-sm ml-1">
+                    {mmss(t)} / {mmss(dur)}
+                  </span>
+                  <div className="ml-auto flex gap-1">
+                    {[0.25, 0.5, 1].map((v) => (
+                      <button
+                        key={v}
+                        onClick={() => velocidad(v)}
+                        className={`${boton} ${vel === v ? "bg-white text-blue-900" : "bg-white/15 text-white hover:bg-white/25"}`}
+                      >
+                        {v === 1 ? "1x" : `${v}x`}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <p className="mt-2 text-[11px] text-white/50 hidden md:block">
+                  Espacio o clic: pausa · ← → : 5 segundos · , . : cuadro a
+                  cuadro · P: láser · Esc: cerrar
+                </p>
+              </div>
+            )}
+            {iframe && (
+              <p
+                className={`absolute bottom-20 left-1/2 -translate-x-1/2 rounded-full bg-black/70 text-white/80 text-xs px-4 py-2 transition-opacity pointer-events-none ${barra ? "opacity-100" : "opacity-0"}`}
+              >
+                {fuente.tipo === "youtube"
+                  ? "Clic en el video: pausa · P: láser · Esc: cerrar"
+                  : "Usá la barra de Drive para pausar · P: láser · Esc: cerrar"}
+              </p>
+            )}
+          </div>
+        );
+      };
+
+      /* Botón de video: abre el reproductor (archivo de la carpeta, YouTube o Drive) */
+      const Video = ({ rid, seccion, label, dark, rosa, partido }) => {
+        const [link, setLink] = usePersist(`${rid}:video_${seccion}`, "");
+        const [editar, setEditar] = useState(false);
+        const [abierto, setAbierto] = useState(false);
+        const fuente = tipoVideo(link.trim() || CONFIG.videos[seccion]);
+        const abrir = () => {
+          if (fuente && fuente.tipo === "externo")
+            window.open(fuente.url, "_blank", "noopener");
+          else if (fuente) setAbierto(true);
+        };
+        return (
+          <div className="shrink-0">
+            <div className="flex gap-2">
+              <button
+                onClick={abrir}
+                className={`flex-1 inline-flex items-center justify-center gap-2 rounded-2xl py-3 px-4 font-bold text-xs md:text-sm uppercase tracking-wider shadow-lg transition hover:scale-[1.02] ${
+                  rosa
+                    ? "bg-pink-500 text-white shadow-pink-900/20"
+                    : dark
+                      ? "bg-white text-blue-800"
+                      : "bg-blue-700 text-white shadow-blue-900/20"
+                }`}
+              >
+                <Ico d={I.play} size={14} /> {label}
+              </button>
+              <button
+                onClick={() => setEditar((v) => !v)}
+                title="Cambiar el video de este partido"
+                className={`w-11 rounded-2xl flex items-center justify-center ${dark ? "bg-white/10 border border-white/25 text-white" : "bg-blue-50 border border-blue-200 text-blue-800"}`}
+              >
+                <Ico d={I.link} size={16} />
+              </button>
+            </div>
+            {editar && (
+              <div className="mt-2">
+                <input
+                  autoFocus
+                  value={link}
+                  onChange={(e) => setLink(e.target.value)}
+                  placeholder={`Link de YouTube/Drive o nombre de archivo (vacío = ${CONFIG.videos[seccion]})`}
+                  className={`w-full rounded-xl px-3 py-2 text-xs outline-none ${dark ? "bg-white/10 border border-white/25 text-white placeholder:text-white/40" : "bg-white border border-blue-200 text-blue-950 placeholder:text-slate-400"}`}
+                />
+                <p
+                  className={`mt-1 text-[10px] ${dark ? "text-blue-100/70" : "text-slate-500"}`}
+                >
+                  Ahora abre:{" "}
+                  <b>
+                    {fuente
+                      ? fuente.tipo === "archivo"
+                        ? fuente.url
+                        : fuente.tipo === "youtube"
+                          ? "YouTube"
+                          : fuente.tipo === "drive"
+                            ? "Google Drive"
+                            : "link externo"
+                      : "—"}
+                  </b>
+                </p>
+              </div>
+            )}
+            {abierto &&
+              fuente &&
+              ReactDOM.createPortal(
+                <Reproductor
+                  fuente={fuente}
+                  titulo={`${label}${partido ? ` · vs ${partido.rival}` : ""}`}
+                  cerrar={() => setAbierto(false)}
+                />,
+                document.body,
+              )}
+          </div>
+        );
+      };
+
+      /* ══════════════════════ DIAPOSITIVAS ══════════════════════ */
+
+      /* 0 — Inicio: elegir el partido */
+      const Inicio = ({
+        rid,
+        partido,
+        partidos,
+        elegir,
+        agregar,
+        quitar,
+        exportar,
+        importar,
+      }) => {
+        const [nuevo, setNuevo] = useState("");
+        const archivo = useRef();
+        return (
+          <Stage theme="dark">
+            <div className="h-full overflow-y-auto scroll-y px-5 pt-12 pb-28">
+              <div className="min-h-full max-w-6xl mx-auto flex flex-col items-center justify-center text-center">
+                <div
+                  className="a a-pop relative float"
+                  style={{ ...d(0, 0.1, 0), "--t": "1s" }}
+                >
+                  <div
+                    className="absolute rounded-full border border-white/30 pulse-ring"
+                    style={{ inset: -12 }}
+                  ></div>
+                  <div
+                    className="absolute rounded-full border border-pink-400/50 pulse-ring"
+                    style={{ inset: -12, animationDelay: "-1.1s" }}
+                  ></div>
+                  <div className="absolute spin-orbit" style={{ inset: -22 }}>
+                    <span className="absolute top-0 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-pink-500 shadow-[0_0_16px_4px_rgba(236,72,153,0.7)]"></span>
+                  </div>
+                  <Logo size={104} />
+                </div>
+                <p
+                  className="a a-fade mt-7 font-mono font-bold text-[10px] md:text-xs tracking-[0.3em] uppercase text-blue-200"
+                  style={d(0, 0.4, 0)}
+                >
+                  {CONFIG.equipo} · {CONFIG.categoria} · {CONFIG.torneo}
+                </p>
+                <h1
+                  className="font-display text-white mt-2"
+                  style={{
+                    fontSize: "clamp(3.5rem, 10vw, 8.5rem)",
+                    textShadow: "0 12px 50px rgba(5,15,70,0.6)",
+                  }}
+                >
+                  <SplitText text="CHARLA" base={0.4} step={0.06} />{" "}
+                  <span className="text-blue-200">
+                    <SplitText text="TÉCNICA" base={0.75} step={0.06} />
+                  </span>
+                </h1>
+
+                <div
+                  key={rid}
+                  className="a a-pop mt-3 inline-flex items-center gap-3 rounded-full bg-white px-6 py-3 shadow-2xl shadow-blue-950/40"
+                  style={d(0, 1.1, 0)}
+                >
+                  <span className="font-display text-pink-500 text-3xl leading-none">
+                    VS
+                  </span>
+                  <span
+                    className="font-display text-blue-800 uppercase leading-none"
+                    style={{ fontSize: "clamp(1.6rem, 3.5vw, 2.6rem)" }}
+                  >
+                    {partido ? partido.rival : "ELEGÍ UN RIVAL"}
+                  </span>
+                </div>
+                {partido && (partido.dia || partido.hora) && (
+                  <p
+                    key={rid + "i"}
+                    className="a a-fade mt-3 text-sm md:text-base text-blue-100 font-semibold"
+                    style={d(0, 1.3, 0)}
+                  >
+                    {[partido.dia, partido.hora, partido.cancha, partido.pdo]
+                      .filter(Boolean)
+                      .join(" · ")}
+                  </p>
+                )}
+
+                {/* Selector de partido */}
+                <div className="a a-rise mt-8 w-full" style={d(0, 1.5, 0)}>
+                  <p className="font-mono font-bold text-[10px] md:text-xs tracking-[0.25em] uppercase text-blue-200 mb-3">
+                    Elegí el partido · cada uno guarda su propia charla
+                  </p>
+                  <div className="flex flex-wrap justify-center gap-3">
+                    {partidos.map((p) => {
+                      const on = p.id === rid;
+                      return (
+                        <div key={p.id} className="relative">
+                          <button
+                            onClick={() => elegir(p.id)}
+                            className={`lift text-left rounded-2xl px-4 py-3 min-w-[190px] transition ${on ? "bg-white text-blue-900 ring-4 ring-pink-400/70 shadow-2xl" : "bg-white/10 border border-white/25 text-white hover:bg-white/20"}`}
+                          >
+                            <span
+                              className={`block font-mono text-[10px] font-bold uppercase tracking-[0.2em] ${on ? "text-pink-500" : "text-blue-200"}`}
+                            >
+                              {p.dia ? `${p.dia} · ${p.hora}` : "Otro partido"}
+                            </span>
+                            <span className="block font-display uppercase text-xl md:text-2xl leading-tight">
+                              {p.rival}
+                            </span>
+                          </button>
+                          {p.extra && (
+                            <button
+                              onClick={() => quitar(p.id)}
+                              title="Quitar este rival"
+                              className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-pink-500 text-white flex items-center justify-center shadow"
+                            >
+                              <Ico d={I.x} size={12} />
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })}
+                    <form
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        if (nuevo.trim()) (agregar(nuevo.trim()), setNuevo(""));
+                      }}
+                      className="flex items-center gap-2 rounded-2xl border-2 border-dashed border-white/30 px-3 py-2 min-w-[220px]"
+                    >
+                      <input
+                        value={nuevo}
+                        onChange={(e) => setNuevo(e.target.value)}
+                        placeholder="Otro rival…"
+                        className="flex-1 bg-transparent outline-none text-white placeholder:text-white/40 font-bold uppercase text-sm"
+                      />
+                      <button
+                        type="submit"
+                        className="w-8 h-8 rounded-full bg-pink-500 text-white flex items-center justify-center"
+                      >
+                        <Ico d={I.plus} size={16} />
+                      </button>
+                    </form>
+                  </div>
+                </div>
+
+                <div
+                  className="a a-fade mt-6 flex flex-wrap justify-center items-center gap-3 text-xs"
+                  style={d(0, 1.8, 0)}
+                >
+                  <span className="text-blue-200">
+                    Todo se guarda solo en este navegador.
+                  </span>
+                  <span className="sm:hidden w-full text-blue-200 font-bold">
+                    Deslizá hacia el costado o usá los botones para pasar.
+                  </span>
+                  <button
+                    onClick={exportar}
+                    className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/25 text-white font-bold px-4 py-2 hover:bg-white/20"
+                  >
+                    <Ico d={I.download} size={14} /> Guardar copia
+                  </button>
+                  <button
+                    onClick={() => archivo.current.click()}
+                    className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/25 text-white font-bold px-4 py-2 hover:bg-white/20"
+                  >
+                    <Ico d={I.upload} size={14} /> Cargar copia
+                  </button>
+                  <input
+                    ref={archivo}
+                    type="file"
+                    accept="application/json,.json"
+                    className="hidden"
+                    onChange={(e) => (
+                      importar(e.target.files[0]),
+                      (e.target.value = "")
+                    )}
+                  />
+                </div>
+              </div>
+            </div>
+          </Stage>
+        );
+      };
+
+      /* 1 — Puntos clave */
+      const Claves = ({ rid, partido }) => (
+        <Stage theme="light">
+          <Marco>
+            <Encabezado
+              eyebrow="Charla técnica"
+              titulo="PUNTOS"
+              acento="CLAVE"
+              partido={partido}
+            />
+            <div className="flex-1 min-h-0 grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+              <div
+                className="a a-left lift flex flex-col rounded-3xl bg-white border border-blue-100 shadow-2xl shadow-blue-900/10 p-5 md:p-7 min-h-[240px]"
+                style={d(0, 0.4, 0)}
+              >
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="w-10 h-10 rounded-2xl bg-pink-500 text-white flex items-center justify-center">
+                    <Icon id="target" size={20} />
+                  </span>
+                  <h3 className="font-display uppercase text-2xl md:text-3xl text-blue-900">
+                    Análisis del rival
+                  </h3>
+                </div>
+                <Notas
+                  storeKey={`${rid}:claves_rival`}
+                  placeholder="Cómo juega, quiénes son las claves, cómo sale, cómo defiende…"
+                  grande
+                />
+              </div>
+              <div
+                className="a a-right lift flex flex-col rounded-3xl bg-gradient-to-br from-blue-600 to-blue-800 text-white shadow-2xl shadow-blue-900/30 p-5 md:p-7 min-h-[240px]"
+                style={d(0, 0.55, 0)}
+              >
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="w-10 h-10 rounded-2xl bg-white text-blue-700 flex items-center justify-center">
+                    <Icon id="flag" size={20} />
+                  </span>
+                  <h3 className="font-display uppercase text-2xl md:text-3xl">
+                    Nuestros objetivos
+                  </h3>
+                </div>
+                <Notas
+                  storeKey={`${rid}:claves_objetivos`}
+                  placeholder="Qué queremos hacer en este partido…"
+                  dark
+                  grande
+                />
+              </div>
+            </div>
+          </Marco>
+        </Stage>
+      );
+
+      /* 2 — XI titular: cancha de hockey + banco */
+      const POS = [
+        [50, 91],
+        [16, 73],
+        [38, 77],
+        [62, 77],
+        [84, 73],
+        [24, 52],
+        [50, 56],
+        [76, 52],
+        [20, 28],
+        [50, 23],
+        [80, 28],
+      ];
+      const formacionInicial = () =>
+        CONFIG.plantel.map((name, i) => ({
+          name,
+          zone: i < 11 ? "field" : "bench",
+          x: i < 11 ? POS[i][0] : 50,
+          y: i < 11 ? POS[i][1] : 50,
+        }));
+      // Si cambia el plantel, se suman las nuevas al banco y se sacan las que ya no están
+      const normalizarXI = (guardado) => {
+        if (!Array.isArray(guardado)) return formacionInicial();
+        const nombres = new Set(CONFIG.plantel);
+        const ok = guardado.filter((p) => nombres.has(p.name));
+        const faltan = CONFIG.plantel
+          .filter((n) => !ok.some((p) => p.name === n))
+          .map((name) => ({ name, zone: "bench", x: 50, y: 50 }));
+        return [...ok, ...faltan];
+      };
+
+      const CanchaSVG = () => {
+        const D = (dir) => {
+          const y0 = dir > 0 ? 0 : 91.4;
+          const s = dir > 0 ? 1 : -1;
+          const sw = dir > 0 ? 0 : 1;
+          return {
+            d: `M11.04 ${y0} A14.63 14.63 0 0 ${sw} 25.67 ${y0 + s * 14.63} L29.33 ${y0 + s * 14.63} A14.63 14.63 0 0 ${sw} 43.96 ${y0}`,
+            d5: `M6.04 ${y0} A19.63 19.63 0 0 ${sw} 25.67 ${y0 + s * 19.63} L29.33 ${y0 + s * 19.63} A19.63 19.63 0 0 ${sw} 48.96 ${y0}`,
+            spot: y0 + s * 6.475,
+            gy: dir > 0 ? -1.2 : 91.4,
+          };
+        };
+        const L = "rgba(255,255,255,0.75)";
+        return (
+          <svg
+            viewBox="0 0 55 91.4"
+            preserveAspectRatio="none"
+            className="absolute inset-0 w-full h-full pointer-events-none"
+          >
+            {[0, 1, 2, 3, 4, 5, 6, 7].map((k) => (
+              <rect
+                key={k}
+                x="0"
+                y={k * 11.425}
+                width="55"
+                height="11.425"
+                fill={k % 2 ? "rgba(255,255,255,0.035)" : "transparent"}
+              />
+            ))}
+            <rect
+              x="0.3"
+              y="0.3"
+              width="54.4"
+              height="90.8"
+              fill="none"
+              stroke={L}
+              strokeWidth="0.35"
+            />
+            <line
+              x1="0"
+              y1="45.7"
+              x2="55"
+              y2="45.7"
+              stroke={L}
+              strokeWidth="0.3"
+            />
+            <line
+              x1="0"
+              y1="22.9"
+              x2="55"
+              y2="22.9"
+              stroke={L}
+              strokeWidth="0.25"
+              opacity="0.7"
+            />
+            <line
+              x1="0"
+              y1="68.5"
+              x2="55"
+              y2="68.5"
+              stroke={L}
+              strokeWidth="0.25"
+              opacity="0.7"
+            />
+            <circle cx="27.5" cy="45.7" r="0.45" fill={L} />
+            {[1, -1].map((dir) => {
+              const g = D(dir);
+              return (
+                <g key={dir}>
+                  <path
+                    d={g.d}
+                    fill="rgba(255,255,255,0.05)"
+                    stroke={L}
+                    strokeWidth="0.35"
+                  />
+                  <path
+                    d={g.d5}
+                    fill="none"
+                    stroke={L}
+                    strokeWidth="0.25"
+                    strokeDasharray="1.2 1"
+                    opacity="0.6"
+                  />
+                  <circle cx="27.5" cy={g.spot} r="0.35" fill={L} />
+                  <rect
+                    x="25.67"
+                    y={g.gy}
+                    width="3.66"
+                    height="1.2"
+                    fill="none"
+                    stroke="#f9a8d4"
+                    strokeWidth="0.35"
+                  />
+                </g>
+              );
+            })}
+          </svg>
+        );
+      };
+
+      const Formacion = ({ rid, partido, partidos }) => {
+        const movil = useEsMovil();
+        const [jug, setJug] = useState(() =>
+          normalizarXI(lsGet(`${rid}:xi`, null)),
+        );
+        const cancha = useRef(null);
+        const [moviendo, setMoviendo] = useState(null);
+        const guardar = (lista) => lsSet(`${rid}:xi`, lista);
+
+        const empezar = (e, name) => {
+          e.preventDefault();
+          setMoviendo(name);
+          const mover = (ev) => {
+            const r = cancha.current.getBoundingClientRect();
+            const dentro =
+              ev.clientX >= r.left &&
+              ev.clientX <= r.right &&
+              ev.clientY >= r.top &&
+              ev.clientY <= r.bottom;
+            setJug((prev) =>
+              prev.map((p) =>
+                p.name !== name
+                  ? p
+                  : dentro
+                    ? {
+                        ...p,
+                        zone: "field",
+                        x: Math.max(
+                          4,
+                          Math.min(96, ((ev.clientX - r.left) / r.width) * 100),
+                        ),
+                        y: Math.max(
+                          3,
+                          Math.min(97, ((ev.clientY - r.top) / r.height) * 100),
+                        ),
+                      }
+                    : { ...p, zone: "bench" },
+              ),
+            );
+          };
+          const soltar = () => {
+            window.removeEventListener("pointermove", mover);
+            window.removeEventListener("pointerup", soltar);
+            window.removeEventListener("pointercancel", soltar);
+            setMoviendo(null);
+            setJug((prev) => (guardar(prev), prev));
+          };
+          window.addEventListener("pointermove", mover);
+          window.addEventListener("pointerup", soltar);
+          window.addEventListener("pointercancel", soltar);
+        };
+
+        const reiniciar = () => {
+          const f = formacionInicial();
+          setJug(f);
+          guardar(f);
+        };
+        const copiarDe = (otro) => {
+          const f = normalizarXI(lsGet(`${otro}:xi`, null));
+          setJug(f);
+          guardar(f);
+        };
+
+        const enCancha = jug.filter((p) => p.zone === "field");
+        const banco = jug.filter((p) => p.zone === "bench");
+        const otros = partidos.filter((p) => p.id !== rid);
+
+        return (
+          <Stage theme="dark">
+            <Marco>
+              <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-4 md:gap-6">
+                {/* Lateral */}
+                <aside className="flex flex-col min-h-0 gap-3">
+                  <div>
+                    <Eyebrow dark>
+                      {partido ? `vs ${partido.rival}` : "Formación"}
+                    </Eyebrow>
+                    <h2
+                      className="font-display uppercase text-white leading-[0.9]"
+                      style={{ fontSize: "clamp(3rem, 6vw, 5.5rem)" }}
+                    >
+                      <SplitText text="XI" base={0.1} step={0.05} />{" "}
+                      <span className="text-blue-200">
+                        <SplitText text="TITULAR" base={0.25} step={0.04} />
+                      </span>
+                    </h2>
+                    <p
+                      className="a a-fade text-xs text-blue-100 mt-1"
+                      style={d(0, 0.6, 0)}
+                    >
+                      <b className="text-white">{enCancha.length}</b> en cancha
+                      · <b className="text-white">{banco.length}</b> en el banco
+                      · arrastrá para mover
+                    </p>
+                  </div>
+                  <div
+                    className="a a-rise flex-1 min-h-[110px] flex flex-col rounded-3xl bg-white/10 border border-white/20 backdrop-blur p-4"
+                    style={d(0, 0.5, 0)}
+                  >
+                    <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-blue-200 mb-2">
+                      Notas de la formación
+                    </p>
+                    <Notas
+                      storeKey={`${rid}:xi_notas`}
+                      placeholder="Roles, marcas, cambios…"
+                      dark
+                    />
+                  </div>
+                  <div
+                    className="a a-rise flex flex-col gap-2"
+                    style={d(0, 0.7, 0)}
+                  >
+                    {otros.length > 0 && (
+                      <select
+                        value=""
+                        onChange={(e) =>
+                          e.target.value && copiarDe(e.target.value)
+                        }
+                        className="w-full rounded-xl bg-white/10 border border-white/25 text-white text-xs font-bold px-3 py-2 outline-none"
+                      >
+                        <option value="" className="text-blue-950">
+                          Copiar el XI de otro partido…
+                        </option>
+                        {otros.map((p) => (
+                          <option
+                            key={p.id}
+                            value={p.id}
+                            className="text-blue-950"
+                          >
+                            vs {p.rival}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                    <button
+                      onClick={reiniciar}
+                      className="inline-flex items-center justify-center gap-2 rounded-xl bg-white/10 border border-white/25 text-white text-xs font-bold px-3 py-2 hover:bg-white/20"
+                    >
+                      <Ico d={I.refresh} size={14} /> Volver a la formación
+                      inicial
+                    </button>
+                  </div>
+                </aside>
+
+                {/* Cancha + banco */}
+                <div
+                  data-noswipe
+                  className="min-h-0 flex flex-col lg:flex-row gap-3 md:gap-4"
+                >
+                  <div className="flex-1 min-w-0 flex items-center justify-center">
+                    <div
+                      ref={cancha}
+                      className="a a-pop relative touch-none rounded-2xl overflow-hidden shadow-2xl shadow-blue-950/50 ring-4 ring-white/20"
+                      style={{
+                        ...d(0, 0.3, 0),
+                        ...(movil
+                          ? { width: "100%", maxWidth: 440, height: "auto" }
+                          : {
+                              height: "100%",
+                              maxHeight: "100%",
+                              maxWidth: "100%",
+                            }),
+                        aspectRatio: "55 / 91.4",
+                        background:
+                          "linear-gradient(180deg,#2563eb 0%,#1d4ed8 50%,#1e40af 100%)",
+                      }}
+                    >
+                      <CanchaSVG />
+                      <span className="absolute left-1/2 -translate-x-1/2 bottom-1 font-mono text-[8px] font-bold tracking-[0.3em] text-white/50 uppercase pointer-events-none">
+                        Nuestro arco
+                      </span>
+                      {enCancha.map((p) => (
+                        <div
+                          key={p.name}
+                          onPointerDown={(e) => empezar(e, p.name)}
+                          style={{
+                            left: `${p.x}%`,
+                            top: `${p.y}%`,
+                            touchAction: "none",
+                          }}
+                          className={`absolute -translate-x-1/2 -translate-y-1/2 w-11 h-11 md:w-14 md:h-14 rounded-full bg-white border-[3px] flex items-center justify-center cursor-grab select-none shadow-lg shadow-blue-950/50 transition-transform ${
+                            moviendo === p.name
+                              ? "border-pink-500 scale-125 z-50"
+                              : "border-pink-400 z-20 hover:scale-110"
+                          }`}
+                        >
+                          <span
+                            className={`font-display uppercase text-blue-800 leading-none text-center px-0.5 ${p.name.length > 5 ? "text-[10px] md:text-xs" : p.name.length > 4 ? "text-xs md:text-sm" : "text-sm md:text-base"}`}
+                          >
+                            {p.name}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="w-full lg:w-32 shrink-0 flex flex-col rounded-3xl bg-white/10 border border-white/20 backdrop-blur overflow-hidden">
+                    <p className="text-center font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-blue-200 py-2 border-b border-white/15">
+                      Banco
+                    </p>
+                    <div className="flex-1 overflow-y-auto scroll-y p-2 flex flex-wrap lg:flex-col lg:flex-nowrap gap-1.5">
+                      {banco.length === 0 && (
+                        <p className="text-[10px] text-blue-100/60 text-center mt-4">
+                          Arrastrá acá para sacar de la cancha
+                        </p>
+                      )}
+                      {banco.map((p) => (
+                        <div
+                          key={p.name}
+                          onPointerDown={(e) => empezar(e, p.name)}
+                          style={{ touchAction: "none" }}
+                          className={`flex items-center gap-2 rounded-xl px-2 py-1.5 cursor-grab select-none transition ${moviendo === p.name ? "bg-pink-500 text-white" : "bg-white/10 hover:bg-white/20 text-white"}`}
+                        >
+                          <span className="w-6 h-6 rounded-full bg-white text-blue-800 font-display text-[10px] flex items-center justify-center shrink-0">
+                            {p.name.slice(0, 2)}
+                          </span>
+                          <span className="text-[11px] font-bold uppercase truncate">
+                            {p.name}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Marco>
+          </Stage>
+        );
+      };
+
+      /* ══════════ PIZARRA MAGNÉTICA (ataque, defensa y córners cortos) ══════════ */
+
+      /* Zona del área en horizontal: el arco a la izquierda (como una pizarra de córner corto).
+         Medidas reales en metros: x = distancia a la línea de fondo, y = ancho de la cancha (55 m). */
+      const AREA_VB = { x0: -2.5, w: 50, h: 55 }; // de -2,5 m (detrás del arco) a 47,5 m
+      const areaPct = (xm, ym) => ({
+        x: ((xm - AREA_VB.x0) / AREA_VB.w) * 100,
+        y: (ym / AREA_VB.h) * 100,
+      });
+
+      const AreaSVG = () => {
+        const L = "rgba(255,255,255,0.8)";
+        const cy = 27.5;
+        const p1 = cy - 1.83; // poste de arriba
+        const p2 = cy + 1.83; // poste de abajo
+        const D = (r) =>
+          `M0 ${p1 - r} A${r} ${r} 0 0 1 ${r} ${p1} L${r} ${p2} A${r} ${r} 0 0 1 0 ${p2 + r}`;
+        const marcas = [5, 10].flatMap((m) => [p1 - m, p2 + m]);
+        return (
+          <svg
+            viewBox={`${AREA_VB.x0} 0 ${AREA_VB.w} ${AREA_VB.h}`}
+            preserveAspectRatio="none"
+            className="absolute inset-0 w-full h-full pointer-events-none"
+          >
+            {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((k) => (
+              <rect
+                key={k}
+                x={k * 4.75}
+                y="0"
+                width="4.75"
+                height="55"
+                fill={k % 2 ? "rgba(255,255,255,0.035)" : "transparent"}
+              />
+            ))}
+            {/* línea de fondo, laterales, 23 m y mitad de cancha */}
+            <line
+              x1="0"
+              y1="0.3"
+              x2="0"
+              y2="54.7"
+              stroke={L}
+              strokeWidth="0.35"
+            />
+            <line
+              x1="0"
+              y1="0.3"
+              x2="47.5"
+              y2="0.3"
+              stroke={L}
+              strokeWidth="0.35"
+            />
+            <line
+              x1="0"
+              y1="54.7"
+              x2="47.5"
+              y2="54.7"
+              stroke={L}
+              strokeWidth="0.35"
+            />
+            <line
+              x1="22.9"
+              y1="0"
+              x2="22.9"
+              y2="55"
+              stroke={L}
+              strokeWidth="0.3"
+              opacity="0.8"
+            />
+            <line
+              x1="45.7"
+              y1="0"
+              x2="45.7"
+              y2="55"
+              stroke={L}
+              strokeWidth="0.3"
+            />
+            <circle cx="45.7" cy={cy} r="0.4" fill={L} />
+            {/* área (círculo) y línea punteada de 5 m */}
+            <path
+              d={D(14.63)}
+              fill="rgba(255,255,255,0.05)"
+              stroke={L}
+              strokeWidth="0.35"
+            />
+            <path
+              d={D(19.63)}
+              fill="none"
+              stroke={L}
+              strokeWidth="0.25"
+              strokeDasharray="1.2 1"
+              opacity="0.7"
+            />
+            {/* punto penal y marcas de la línea de fondo (5 y 10 m del poste) */}
+            <circle cx="6.475" cy={cy} r="0.35" fill={L} />
+            {marcas.map((y, i) => (
+              <line
+                key={i}
+                x1="0"
+                y1={y}
+                x2="0.9"
+                y2={y}
+                stroke={L}
+                strokeWidth="0.3"
+              />
+            ))}
+            {[14.63, 22.9].flatMap((x) => [
+              <line
+                key={`t${x}`}
+                x1={x}
+                y1="0"
+                x2={x}
+                y2="1"
+                stroke={L}
+                strokeWidth="0.3"
+              />,
+              <line
+                key={`b${x}`}
+                x1={x}
+                y1="54"
+                x2={x}
+                y2="55"
+                stroke={L}
+                strokeWidth="0.3"
+              />,
+            ])}
+            {/* arco */}
+            <rect
+              x="-1.2"
+              y={p1}
+              width="1.2"
+              height="3.66"
+              fill="rgba(255,255,255,0.15)"
+              stroke="#f9a8d4"
+              strokeWidth="0.35"
+            />
+          </svg>
+        );
+      };
+
+      /* Posiciones iniciales (en % del tablero) */
+      const fichas = (lista, equipo) =>
+        lista.map(([x, y, arquera], i) => ({
+          id: `${equipo}${i}`,
+          equipo,
+          arquera: !!arquera,
+          x,
+          y,
+        }));
+      const PELOTA = (x, y) => [{ id: "pelota", equipo: "pelota", x, y }];
+
+      const INICIAL = {
+        // Cancha completa (vertical): nuestro arco abajo
+        ataque: () => [
+          ...fichas(
+            [
+              [18, 72],
+              [39, 75],
+              [61, 75],
+              [82, 72],
+              [26, 55],
+              [50, 58],
+              [74, 55],
+              [22, 34],
+              [50, 30],
+              [78, 34],
+            ],
+            "nos",
+          ),
+          ...fichas(
+            [
+              [24, 15],
+              [42, 12],
+              [58, 12],
+              [76, 15],
+              [30, 27],
+              [50, 24],
+              [70, 27],
+              [28, 44],
+              [50, 46],
+              [72, 44],
+            ],
+            "riv",
+          ),
+          ...PELOTA(50, 52),
+        ],
+        // Bloqueo central: el rival sale por el medio y armamos el bloque cerrando el centro
+        defensa: () => [
+          ...fichas(
+            [
+              [38, 38],
+              [50, 35],
+              [62, 38],
+              [30, 50],
+              [50, 52],
+              [70, 50],
+              [25, 65],
+              [42, 67],
+              [58, 67],
+              [75, 65],
+            ],
+            "nos",
+          ),
+          ...fichas(
+            [
+              [18, 17],
+              [38, 14],
+              [62, 14],
+              [82, 17],
+              [50, 26],
+              [22, 36],
+              [78, 36],
+              [32, 58],
+              [50, 74],
+              [68, 58],
+            ],
+            "riv",
+          ),
+          ...PELOTA(50, 22),
+        ],
+        // Bloqueo lateral: el rival sale por un costado y el bloque se corre hacia esa banda
+        defensa_lateral: () => [
+          ...fichas(
+            [
+              [66, 32],
+              [80, 24],
+              [92, 36],
+              [56, 44],
+              [72, 45],
+              [88, 50],
+              [40, 62],
+              [55, 64],
+              [70, 64],
+              [86, 62],
+            ],
+            "nos",
+          ),
+          ...fichas(
+            [
+              [86, 28],
+              [62, 16],
+              [40, 14],
+              [20, 18],
+              [50, 30],
+              [28, 40],
+              [76, 40],
+              [35, 58],
+              [60, 74],
+              [90, 56],
+            ],
+            "riv",
+          ),
+          ...PELOTA(84, 24),
+        ],
+      };
+      // Córners cortos (zona del área en horizontal, en metros → %)
+      const arco5 = [
+        [0.9, 27.5, true],
+        [0.6, 20.8],
+        [0.6, 23.6],
+        [0.6, 31.4],
+        [0.6, 34.2],
+      ]; // arquera + 4 en la línea de fondo
+      const ataque7 = [
+        [-1.3, 15.67],
+        [9.8, 15.9],
+        [13.8, 21.1],
+        [15.2, 27.5],
+        [13.8, 33.9],
+        [9.8, 39.1],
+        [18.5, 30.5],
+      ]; // sacadora + 6
+      const enArea = (lista) =>
+        lista.map(([x, y, a]) => [areaPct(x, y).x, areaPct(x, y).y, a]);
+      INICIAL.ccdef = () => [
+        ...fichas(enArea(arco5), "nos"),
+        ...fichas(enArea(ataque7), "riv"),
+        ...PELOTA(areaPct(0.5, 15.67).x, areaPct(0.5, 15.67).y),
+      ];
+      INICIAL.ccof = () => [
+        ...fichas(enArea(ataque7), "nos"),
+        ...fichas(enArea(arco5), "riv"),
+        ...PELOTA(areaPct(0.5, 15.67).x, areaPct(0.5, 15.67).y),
+      ];
+
+      const Pizarra = ({
+        rid,
+        seccion,
+        tipo,
+        dark,
+        partidos,
+        titulo,
+        accion,
+      }) => {
+        const movil = useEsMovil();
+        const clave = `${rid}:pizarra_${seccion}`;
+        const inicial = INICIAL[seccion];
+        const leer = (k) => {
+          const g = lsGet(k, null);
+          const base = inicial();
+          if (
+            !Array.isArray(g) ||
+            g.length !== base.length ||
+            g.some((f, i) => f.id !== base[i].id)
+          )
+            return base;
+          return g;
+        };
+        const [fs, setFs] = useState(() => leer(clave));
+        const [moviendo, setMoviendo] = useState(null);
+        const tablero = useRef(null);
+        const guardar = (l) => lsSet(clave, l);
+
+        const empezar = (e, id) => {
+          e.preventDefault();
+          setMoviendo(id);
+          const mover = (ev) => {
+            const r = tablero.current.getBoundingClientRect();
+            const x = Math.max(
+              1.5,
+              Math.min(98.5, ((ev.clientX - r.left) / r.width) * 100),
+            );
+            const y = Math.max(
+              1.5,
+              Math.min(98.5, ((ev.clientY - r.top) / r.height) * 100),
+            );
+            setFs((prev) =>
+              prev.map((f) => (f.id === id ? { ...f, x, y } : f)),
+            );
+          };
+          const soltar = () => {
+            window.removeEventListener("pointermove", mover);
+            window.removeEventListener("pointerup", soltar);
+            window.removeEventListener("pointercancel", soltar);
+            setMoviendo(null);
+            setFs((prev) => (guardar(prev), prev));
+          };
+          window.addEventListener("pointermove", mover);
+          window.addEventListener("pointerup", soltar);
+          window.addEventListener("pointercancel", soltar);
+        };
+        const reiniciar = () => {
+          const b = inicial();
+          setFs(b);
+          guardar(b);
+        };
+        const copiarDe = (otro) => {
+          const b = leer(`${otro}:pizarra_${seccion}`);
+          setFs(b);
+          guardar(b);
+        };
+
+        const area = tipo === "area";
+        const ratio = area ? `${AREA_VB.w} / ${AREA_VB.h}` : "55 / 91.4";
+        const otros = (partidos || []).filter((p) => p.id !== rid);
+        const nNos = fs.filter((f) => f.equipo === "nos").length;
+        const nRiv = fs.filter((f) => f.equipo === "riv").length;
+        const boton = dark
+          ? "bg-white/10 border border-white/25 text-white hover:bg-white/20"
+          : "bg-white border border-blue-200 text-blue-900 hover:bg-blue-50";
+
+        return (
+          <div className="h-full flex flex-col gap-2 min-h-0">
+            {(titulo || accion) && (
+              <div className="shrink-0 flex flex-wrap items-center justify-between gap-2">
+                <span
+                  className={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 font-display uppercase text-xl md:text-2xl leading-none shadow-lg ${dark ? "bg-white text-blue-900" : "bg-blue-700 text-white"}`}
+                >
+                  <span className="w-2.5 h-2.5 rounded-full bg-pink-500"></span>
+                  {titulo}
+                </span>
+                {accion}
+              </div>
+            )}
+            <div
+              data-noswipe
+              className="flex-1 min-h-0 flex items-center justify-center"
+            >
+              <div
+                ref={tablero}
+                className="relative touch-none rounded-2xl overflow-hidden shadow-2xl shadow-blue-950/40 ring-4 ring-white/30"
+                style={{
+                  ...(movil
+                    ? {
+                        width: "100%",
+                        maxWidth: area ? 620 : 460,
+                        height: "auto",
+                      }
+                    : { height: "100%", maxHeight: "100%", maxWidth: "100%" }),
+                  aspectRatio: ratio,
+                  background:
+                    "linear-gradient(160deg,#2563eb 0%,#1d4ed8 50%,#1e40af 100%)",
+                }}
+              >
+                {area ? <AreaSVG /> : <CanchaSVG />}
+                {!area && (
+                  <span className="absolute left-1/2 -translate-x-1/2 bottom-1 font-mono text-[8px] font-bold tracking-[0.3em] text-white/50 uppercase pointer-events-none">
+                    Nuestro arco
+                  </span>
+                )}
+                {fs.map((f) => {
+                  const activo = moviendo === f.id;
+                  if (f.equipo === "pelota")
+                    return (
+                      <div
+                        key={f.id}
+                        onPointerDown={(e) => empezar(e, f.id)}
+                        style={{
+                          left: `${f.x}%`,
+                          top: `${f.y}%`,
+                          touchAction: "none",
+                        }}
+                        title="Pelota"
+                        className={`absolute -translate-x-1/2 -translate-y-1/2 w-3.5 h-3.5 md:w-4 md:h-4 rounded-full bg-white ring-[3px] ring-pink-500 cursor-grab shadow-md ${activo ? "scale-150 z-50" : "z-30 hover:scale-125"} transition-transform`}
+                      ></div>
+                    );
+                  const nos = f.equipo === "nos";
+                  return (
+                    <div
+                      key={f.id}
+                      onPointerDown={(e) => empezar(e, f.id)}
+                      style={{
+                        left: `${f.x}%`,
+                        top: `${f.y}%`,
+                        touchAction: "none",
+                      }}
+                      title={`${nos ? "Nosotros" : "Rival"}${f.arquera ? " · arquera" : ""}`}
+                      className={`absolute -translate-x-1/2 -translate-y-1/2 w-6 h-6 md:w-7 md:h-7 rounded-full bg-white border-[3px] md:border-4 flex items-center justify-center cursor-grab select-none shadow-md shadow-blue-950/50 transition-transform ${
+                        nos
+                          ? "border-blue-700 ring-2 ring-white"
+                          : "border-red-500 ring-2 ring-white"
+                      } ${activo ? "scale-125 z-50" : "z-20 hover:scale-110"}`}
+                    >
+                      {f.arquera && (
+                        <span
+                          className={`font-display text-[11px] md:text-xs leading-none ${nos ? "text-blue-700" : "text-red-500"}`}
+                        >
+                          A
+                        </span>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+            <div className="shrink-0 flex flex-wrap items-center justify-center gap-2 text-[11px] font-bold">
+              <span
+                className={`inline-flex items-center gap-1.5 ${dark ? "text-white" : "text-blue-900"}`}
+              >
+                <span className="w-3.5 h-3.5 rounded-full bg-white border-[3px] border-blue-700 ring-1 ring-blue-200"></span>{" "}
+                Nosotros ({nNos})
+              </span>
+              <span
+                className={`inline-flex items-center gap-1.5 ${dark ? "text-white" : "text-blue-900"}`}
+              >
+                <span className="w-3.5 h-3.5 rounded-full bg-white border-[3px] border-red-500"></span>{" "}
+                Rival ({nRiv})
+              </span>
+              <span
+                className={`inline-flex items-center gap-1.5 ${dark ? "text-white" : "text-blue-900"}`}
+              >
+                <span className="w-2.5 h-2.5 rounded-full bg-white ring-2 ring-pink-500"></span>{" "}
+                Pelota
+              </span>
+              {area && (
+                <span className={dark ? "text-blue-200" : "text-slate-500"}>
+                  A = arquera
+                </span>
+              )}
+              <button
+                onClick={reiniciar}
+                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 ${boton}`}
+              >
+                <Ico d={I.refresh} size={12} /> Reiniciar fichas
+              </button>
+              {otros.length > 0 && (
+                <select
+                  value=""
+                  onChange={(e) => e.target.value && copiarDe(e.target.value)}
+                  className={`rounded-full px-3 py-1.5 outline-none ${boton}`}
+                >
+                  <option value="">Copiar de otro partido…</option>
+                  {otros.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      vs {p.rival}
+                    </option>
+                  ))}
+                </select>
+              )}
+            </div>
+          </div>
+        );
+      };
+
+      /* Defensa: dos pizarras (bloqueo central y lateral) que se dan vuelta con un botón */
+      const PizarraDoble = (props) => {
+        const [lado, setLado] = usePersist(
+          `${props.rid}:defensa_lado`,
+          "central",
+        );
+        const [fase, setFase] = useState("");
+        const girar = () => {
+          if (fase) return;
+          setFase("sale");
+          setTimeout(() => {
+            setLado((l) => (l === "central" ? "lateral" : "central"));
+            setFase("entra");
+            setTimeout(() => setFase(""), 450);
+          }, 380);
+        };
+        const central = lado === "central";
+        const boton = (
+          <button
+            onClick={girar}
+            className="inline-flex items-center gap-2 rounded-full bg-pink-500 hover:bg-pink-600 text-white font-bold text-xs md:text-sm uppercase tracking-wider px-4 py-2 shadow-lg transition hover:scale-105"
+          >
+            <Ico d={I.refresh} size={14} /> Ver bloqueo{" "}
+            {central ? "lateral" : "central"}
+          </button>
+        );
+        return (
+          <div className="h-full" style={{ perspective: 1800 }}>
+            <div
+              className={`h-full ${fase === "sale" ? "giro-sale" : fase === "entra" ? "giro-entra" : ""}`}
+            >
+              <Pizarra
+                key={lado}
+                {...props}
+                seccion={central ? "defensa" : "defensa_lateral"}
+                titulo={central ? "Bloqueo central" : "Bloqueo lateral"}
+                accion={boton}
+              />
+            </div>
+          </div>
+        );
+      };
+
+      /* 3 a 6 — Ataque, defensa y córners cortos */
+      const Seccion = ({
+        rid,
+        partido,
+        dark,
+        badge,
+        titulo,
+        acento,
+        seccion,
+        notasPh,
+        pizarra,
+        partidos,
+        videoLabel,
+        rosa,
+      }) => {
+        const t = tema(dark);
+        return (
+          <Stage theme={dark ? "dark" : "light"}>
+            <Marco>
+              <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-[340px_1fr] gap-4 md:gap-6">
+                <aside className="flex flex-col min-h-0 gap-3">
+                  <div>
+                    <span
+                      className={`a a-pop inline-block rounded-full px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.2em] ${rosa ? "bg-pink-500 text-white" : dark ? "bg-white text-blue-800" : "bg-blue-700 text-white"}`}
+                      style={d(0, 0.1, 0)}
+                    >
+                      {badge}
+                    </span>
+                    <h2
+                      className={`font-display uppercase leading-[0.9] mt-2 ${t.titulo}`}
+                      style={{
+                        fontSize: acento
+                          ? "clamp(2.2rem, 3.6vw, 3.6rem)"
+                          : "clamp(2.6rem, 5vw, 4.6rem)",
+                      }}
+                    >
+                      <SplitText text={titulo} base={0.2} step={0.04} />
+                      {acento && (
+                        <>
+                          <br />
+                          <span className={t.acento}>
+                            <SplitText text={acento} base={0.5} step={0.04} />
+                          </span>
+                        </>
+                      )}
+                    </h2>
+                    {partido && (
+                      <p
+                        className={`a a-fade mt-1 text-xs font-bold uppercase tracking-wider ${t.sub}`}
+                        style={d(0, 0.6, 0)}
+                      >
+                        vs {partido.rival}
+                      </p>
+                    )}
+                  </div>
+                  <div
+                    className={`a a-rise flex-1 min-h-[120px] flex flex-col rounded-3xl p-4 ${t.card}`}
+                    style={d(0, 0.5, 0)}
+                  >
+                    <p
+                      className={`font-mono text-[10px] font-bold uppercase tracking-[0.2em] mb-2 ${dark ? "text-blue-200" : "text-blue-700"}`}
+                    >
+                      Notas
+                    </p>
+                    <Notas
+                      storeKey={`${rid}:${seccion}_notas`}
+                      placeholder={notasPh}
+                      dark={dark}
+                    />
+                  </div>
+                  <div className="a a-rise" style={d(0, 0.7, 0)}>
+                    <Video
+                      rid={rid}
+                      partido={partido}
+                      seccion={seccion}
+                      label={videoLabel}
+                      dark={dark}
+                      rosa={rosa}
+                    />
+                  </div>
+                </aside>
+                <div className="a a-right min-h-0 h-full" style={d(0, 0.35, 0)}>
+                  {seccion === "defensa" ? (
+                    <PizarraDoble
+                      key={`${rid}:${seccion}`}
+                      rid={rid}
+                      tipo={pizarra}
+                      dark={dark}
+                      partidos={partidos}
+                    />
+                  ) : (
+                    <Pizarra
+                      key={`${rid}:${seccion}`}
+                      rid={rid}
+                      seccion={seccion}
+                      tipo={pizarra}
+                      dark={dark}
+                      partidos={partidos}
+                    />
+                  )}
+                </div>
+              </div>
+            </Marco>
+          </Stage>
+        );
+      };
+
+      const SLIDES = [
+        { id: "inicio", label: "Inicio", theme: "dark", C: Inicio },
+        { id: "claves", label: "Claves", theme: "light", C: Claves },
+        { id: "xi", label: "XI", theme: "dark", C: Formacion },
+        {
+          id: "ataque",
+          label: "Ataque",
+          theme: "light",
+          C: (p) => (
+            <Seccion
+              {...p}
+              seccion="ataque"
+              badge="Con pelota"
+              titulo="ATAQUE"
+              notasPh="Cómo atacamos a este rival…"
+              pizarra="cancha"
+              videoLabel="Video con pelota"
+              rosa
+            />
+          ),
+        },
+        {
+          id: "defensa",
+          label: "Defensa",
+          theme: "dark",
+          C: (p) => (
+            <Seccion
+              {...p}
+              dark
+              seccion="defensa"
+              badge="Sin pelota"
+              titulo="DEFENSA"
+              notasPh="Cómo defendemos a este rival…"
+              pizarra="cancha"
+              videoLabel="Video sin pelota"
+            />
+          ),
+        },
+        {
+          id: "ccof",
+          label: "CC Of.",
+          theme: "light",
+          C: (p) => (
+            <Seccion
+              {...p}
+              seccion="ccof"
+              badge="Set piece"
+              titulo="CÓRNER CORTO"
+              acento="OFENSIVO"
+              notasPh="Jugadas y variantes…"
+              pizarra="area"
+              videoLabel="Video CC ofensivo"
+              rosa
+            />
+          ),
+        },
+        {
+          id: "ccdef",
+          label: "CC Def.",
+          theme: "dark",
+          C: (p) => (
+            <Seccion
+              {...p}
+              dark
+              seccion="ccdef"
+              badge="Set piece"
+              titulo="CÓRNER CORTO"
+              acento="DEFENSIVO"
+              notasPh="Roles y responsabilidades…"
+              pizarra="area"
+              videoLabel="Video CC defensivo"
+            />
+          ),
+        },
+      ];
+
+      /* ── APP ────────────────────────────────────────────────── */
+      const App = () => {
+        const total = SLIDES.length;
+        const [view, setView] = useState(0);
+        const [curtain, setCurtain] = useState(0);
+        const viewRef = useRef(0);
+        const busy = useRef(false);
+        const [extras, setExtras] = usePersist("rivales_extra", []);
+        const [rid, setRid] = usePersist("rival_actual", CONFIG.partidos[0].id);
+        const [rev, setRev] = useState(0); // fuerza a recargar todo después de "Cargar copia"
+        const [aviso, setAviso] = useState("");
+
+        const partidos = [
+          ...CONFIG.partidos,
+          ...extras.map((x) => ({ ...x, extra: true })),
+        ];
+        const partido = partidos.find((p) => p.id === rid) || partidos[0];
+
+        const avisar = (t) => {
+          setAviso(t);
+          setTimeout(() => setAviso(""), 3500);
+        };
+
+        const goTo = (n) => {
+          if (busy.current || n < 0 || n >= total || n === viewRef.current)
+            return;
+          busy.current = true;
+          setCurtain((c) => c + 1);
+          setTimeout(() => {
+            viewRef.current = n;
+            setView(n);
+          }, 430);
+          setTimeout(() => (busy.current = false), 950);
+        };
+        const go = (dir) => goTo(viewRef.current + dir);
+
+        // Deslizar hacia el costado para cambiar de diapositiva (no en la cancha, ni mientras se escribe)
+        const toque = useRef(null);
+        const onTouchStart = (e) => {
+          const t = e.touches[0];
+          const bloqueado =
+            e.target.closest &&
+            e.target.closest("[data-noswipe], textarea, input, select");
+          toque.current = bloqueado
+            ? null
+            : { x: t.clientX, y: t.clientY, t: Date.now() };
+        };
+        const onTouchEnd = (e) => {
+          const s0 = toque.current;
+          toque.current = null;
+          if (!s0) return;
+          const t = e.changedTouches[0];
+          const dx = t.clientX - s0.x;
+          const dy = t.clientY - s0.y;
+          if (
+            Math.abs(dx) > 60 &&
+            Math.abs(dx) > Math.abs(dy) * 1.5 &&
+            Date.now() - s0.t < 800
+          )
+            go(dx < 0 ? 1 : -1);
+        };
+
+        useEffect(() => {
+          const h = (e) => {
+            const tag = (e.target && e.target.tagName) || "";
+            if (
+              /INPUT|TEXTAREA|SELECT/.test(tag) ||
+              (e.target && e.target.isContentEditable)
+            )
+              return; // no mover mientras se escribe
+            if (["ArrowRight", "PageDown"].includes(e.key)) go(1);
+            if (["ArrowLeft", "PageUp"].includes(e.key)) go(-1);
+          };
+          window.addEventListener("keydown", h);
+          return () => window.removeEventListener("keydown", h);
+        }, []);
+
+        const agregar = (nombre) => {
+          const base = slugId(nombre) || "rival";
+          let id = base,
+            k = 2;
+          while (partidos.some((p) => p.id === id)) id = `${base}-${k++}`;
+          setExtras((x) => [...x, { id, rival: nombre.toUpperCase() }]);
+          setRid(id);
+        };
+        const quitar = (id) => {
+          setExtras((x) => x.filter((p) => p.id !== id));
+          if (rid === id) setRid(CONFIG.partidos[0].id);
+        };
+
+        const exportar = async () => {
+          const ls = {};
+          lsKeys(`${partido.id}:`).forEach(
+            (k) => (ls[k.slice(partido.id.length + 1)] = lsGet(k, null)),
+          );
+          const img = {};
+          const claves = (await IMG.keys()).filter((k) =>
+            String(k).startsWith(`${partido.id}:`),
+          );
+          for (const k of claves)
+            img[String(k).slice(partido.id.length + 1)] = await IMG.get(k);
+          const data = {
+            tipo: "charla-partido-sportiva",
+            version: 1,
+            partido: { id: partido.id, rival: partido.rival },
+            ls,
+            img,
+          };
+          const blob = new Blob([JSON.stringify(data)], {
+            type: "application/json",
+          });
+          const a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = `charla-vs-${partido.id}.json`;
+          a.click();
+          setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+          avisar("Copia guardada en Descargas.");
+        };
+
+        const importar = (file) => {
+          if (!file) return;
+          const fr = new FileReader();
+          fr.onload = async () => {
+            try {
+              const data = JSON.parse(fr.result);
+              if (data.tipo !== "charla-partido-sportiva")
+                throw new Error("formato");
+              const id = data.partido.id;
+              if (!partidos.some((p) => p.id === id))
+                setExtras((x) => [...x, { id, rival: data.partido.rival }]);
+              Object.entries(data.ls || {}).forEach(([k, v]) =>
+                lsSet(`${id}:${k}`, v),
+              );
+              for (const [k, v] of Object.entries(data.img || {}))
+                await IMG.set(`${id}:${k}`, v);
+              setRid(id);
+              setRev((r) => r + 1);
+              avisar(`Charla vs ${data.partido.rival} cargada.`);
+            } catch (e) {
+              avisar("Ese archivo no es una copia de la charla.");
+            }
+          };
+          fr.readAsText(file);
+        };
+
+        const { C, theme, id } = SLIDES[view];
+        const dark = theme === "dark";
+        const props = {
+          rid: partido.id,
+          partido,
+          partidos,
+          elegir: setRid,
+          agregar,
+          quitar,
+          exportar,
+          importar,
+        };
+
+        return (
+          <div
+            className="alto relative w-screen overflow-hidden bg-blue-950"
+            onTouchStart={onTouchStart}
+            onTouchEnd={onTouchEnd}
+          >
+            <div className="fixed top-0 left-0 w-full h-1 z-[60] bg-blue-900/20">
+              <div
+                className="h-full bg-gradient-to-r from-blue-500 via-blue-400 to-pink-500"
+                style={{
+                  width: `${((view + 1) / total) * 100}%`,
+                  transition: "width 0.6s cubic-bezier(0.22,1,0.36,1)",
+                }}
+              ></div>
+            </div>
+
+            <div
+              key={`${id}:${id === "inicio" ? "" : partido.id}:${rev}`}
+              className="absolute inset-0"
+            >
+              <C {...props} />
+            </div>
+
+            {curtain > 0 && <div key={curtain} className="curtain"></div>}
+
+            <div
+              className={`absolute top-4 left-5 z-50 hidden sm:flex items-center gap-2 font-mono font-bold text-[10px] uppercase tracking-[0.25em] ${dark ? "text-white/60" : "text-blue-900/60"}`}
+            >
+              <span className="w-2 h-2 rounded-full bg-pink-500"></span>
+              Charla técnica · vs {partido.rival}
+            </div>
+            <div
+              className={`absolute top-3 right-5 z-50 font-display text-2xl ${dark ? "text-white" : "text-blue-900"}`}
+            >
+              {String(view + 1).padStart(2, "0")}
+              <span
+                className={`text-sm ml-1 ${dark ? "text-white/40" : "text-blue-900/40"}`}
+              >
+                / {String(total).padStart(2, "0")}
+              </span>
+            </div>
+
+            {aviso && (
+              <div
+                className="absolute top-12 left-1/2 -translate-x-1/2 z-[70] a a-pop rounded-full bg-white text-blue-900 font-bold text-sm px-5 py-2 shadow-2xl ring-2 ring-pink-400"
+                style={{ "--d": "0s" }}
+              >
+                {aviso}
+              </div>
+            )}
+
+            <div
+              className={`absolute bottom-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 rounded-full px-2 py-2 backdrop-blur-md border max-w-[96vw] ${dark ? "bg-white/10 border-white/25" : "bg-white/85 border-blue-200 shadow-lg shadow-blue-900/10"}`}
+            >
+              <button
+                aria-label="Anterior"
+                className={`w-11 h-11 sm:w-9 sm:h-9 shrink-0 rounded-full flex items-center justify-center transition hover:scale-110 ${dark ? "bg-white/15 text-white hover:bg-white hover:text-blue-700" : "bg-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white"}`}
+                onClick={() => go(-1)}
+                style={{ opacity: view === 0 ? 0.35 : 1 }}
+              >
+                <Icon id="left" size={16} />
+              </button>
+              <div className="sm:hidden flex flex-col items-center px-3 min-w-[130px]">
+                <span
+                  className={`font-display uppercase text-xl leading-none ${dark ? "text-white" : "text-blue-900"}`}
+                >
+                  {SLIDES[view].label}
+                </span>
+                <div className="flex gap-1 mt-1.5">
+                  {SLIDES.map((s, i) => (
+                    <button
+                      key={s.id}
+                      aria-label={s.label}
+                      onClick={() => goTo(i)}
+                      className={`h-1.5 rounded-full transition-all ${i === view ? "w-5 bg-pink-500" : dark ? "w-1.5 bg-white/40" : "w-1.5 bg-blue-900/25"}`}
+                    ></button>
+                  ))}
+                </div>
+              </div>
+              <div className="hidden sm:flex items-center gap-1 overflow-x-auto scroll-y">
+                {SLIDES.map((s, i) => (
+                  <button
+                    key={s.id}
+                    onClick={() => goTo(i)}
+                    className={`shrink-0 rounded-full px-3 py-1.5 text-[10px] md:text-[11px] font-bold uppercase tracking-wider transition ${
+                      i === view
+                        ? "bg-pink-500 text-white shadow-md"
+                        : dark
+                          ? "text-white/60 hover:text-white hover:bg-white/10"
+                          : "text-blue-900/60 hover:text-blue-900 hover:bg-blue-50"
+                    }`}
+                  >
+                    {s.label}
+                  </button>
+                ))}
+              </div>
+              <button
+                aria-label="Siguiente"
+                className="w-11 h-11 sm:w-9 sm:h-9 shrink-0 rounded-full flex items-center justify-center bg-blue-600 text-white transition hover:scale-110 hover:bg-pink-500"
+                onClick={() => go(1)}
+                style={{ opacity: view === total - 1 ? 0.35 : 1 }}
+              >
+                <Icon id="right" size={16} />
+              </button>
+            </div>
+          </div>
+        );
+      };
+
+      ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+    </script>
+  </body>
+</html>
